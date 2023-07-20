@@ -8,7 +8,7 @@ export abstract class Entity<IDType = any> {
     id: IDType | null,
     createdAt?: Date,
     updatedAt?: Date,
-    deletedAt?: Date,
+    deletedAt?: Date | null,
   ) {
     this.id = id;
     this.createdAt = createdAt;

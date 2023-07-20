@@ -20,7 +20,7 @@ export class Birdhouse extends Entity<string> {
     latitude: number,
     createdAt?: Date,
     updatedAt?: Date,
-    deletedAt?: Date,
+    deletedAt?: Date | null,
   ) {
     super(id, createdAt, updatedAt, deletedAt);
     this.ubid = ubid;
