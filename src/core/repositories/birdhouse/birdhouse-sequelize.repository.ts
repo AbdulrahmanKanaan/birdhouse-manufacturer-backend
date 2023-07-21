@@ -23,8 +23,59 @@ export class BirdhouseSequelizeRepository implements BirdhouseRepository {
     private readonly birdhouseMapper: BirdhouseMapper<BirdhouseModel>,
   ) {}
 
-  public async create(data: Birdhouse): Promise<Birdhouse> {
-    const birdhouse = this.birdhouseMapper.toModel(data);
+  public async findById(id: string): Promise<Birdhouse | null> {
+    const birdhouse = await this.birdhouseModel.findOne({
+      where: { id },
+    });
+
+    if (!birdhouse) {
+      return null;
+    }
+
+    return this.birdhouseMapper.toEntity(birdhouse);
+  }
+
+  public async findAll(
+    filters: BirdhouseRepositoryTypes.FindAllFilters,
+    options: BirdhouseRepositoryTypes.FindAllOptions,
+  ): Promise<Birdhouse[]> {
+    let order = undefined;
+    if (options.order) {
+      order = [options.order.by, options.order.direction];
+    }
+
+    const birdhouses = await this.birdhouseModel.findAll({
+      where: {
+        name: {
+          [Op.substring]: filters.name,
+        },
+      },
+      limit: options.limit,
+      offset: options.skip,
+      order,
+    });
+
+    return birdhouses.map((birdhouse) =>
+      this.birdhouseMapper.toEntity(birdhouse),
+    );
+  }
+
+  public async count(
+    filters: BirdhouseRepositoryTypes.FindAllFilters,
+  ): Promise<number> {
+    const count = await this.birdhouseModel.count({
+      where: {
+        name: {
+          [Op.substring]: filters.name,
+        },
+      },
+    });
+
+    return count;
+  }
+
+  public async create(data: Omit<Birdhouse, 'id'>): Promise<Birdhouse> {
+    const birdhouse = this.birdhouseMapper.toModel(data as Birdhouse);
 
     try {
       await birdhouse.save();
@@ -80,56 +131,5 @@ export class BirdhouseSequelizeRepository implements BirdhouseRepository {
         error: e as Error,
       });
     }
-  }
-
-  public async findById(id: string): Promise<Birdhouse | null> {
-    const birdhouse = await this.birdhouseModel.findOne({
-      where: { id },
-    });
-
-    if (!birdhouse) {
-      return null;
-    }
-
-    return this.birdhouseMapper.toEntity(birdhouse);
-  }
-
-  public async findAll(
-    filters: BirdhouseRepositoryTypes.FindAllFilters,
-    options: BirdhouseRepositoryTypes.FindAllOptions,
-  ): Promise<Birdhouse[]> {
-    let order = undefined;
-    if (options.order) {
-      order = [options.order.by, options.order.direction];
-    }
-
-    const birdhouses = await this.birdhouseModel.findAll({
-      where: {
-        createdAt: {
-          [Op.lte]: filters.olderThan,
-        },
-      },
-      limit: options.limit,
-      offset: options.skip,
-      order,
-    });
-
-    return birdhouses.map((birdhouse) =>
-      this.birdhouseMapper.toEntity(birdhouse),
-    );
-  }
-
-  public async count(
-    filters: BirdhouseRepositoryTypes.FindAllFilters,
-  ): Promise<number> {
-    const count = await this.birdhouseModel.count({
-      where: {
-        createdAt: {
-          [Op.lte]: filters.olderThan,
-        },
-      },
-    });
-
-    return count;
   }
 }

@@ -1,7 +1,7 @@
 import { Birdhouse } from '../entities';
 
 export interface BirdhouseRepository {
-  create(data: Birdhouse): Promise<Birdhouse>;
+  create(data: Omit<Birdhouse, 'id'>): Promise<Birdhouse>;
   update(
     filter: BirdhouseRepositoryTypes.UpdateFilter,
     data: Partial<Birdhouse>,
@@ -27,7 +27,7 @@ export namespace BirdhouseRepositoryTypes {
   };
 
   export type FindAllFilters = {
-    olderThan?: Date;
+    name?: string;
   };
 
   export type FindAllOptions = {

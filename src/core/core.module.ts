@@ -1,5 +1,4 @@
 import { Module, Provider } from '@nestjs/common';
-import { BirdhouseService } from './birdhouse/birdhouse.service';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { BirdhouseModel, ResidencyModel } from './models';
 import { BirdhouseRepository } from '&/domain/repositories';
@@ -19,7 +18,7 @@ const mappers: Provider[] = [
 ];
 
 @Module({
-  providers: [BirdhouseService, ...repositories, ...mappers],
+  providers: [...repositories, ...mappers],
   imports: [SequelizeModule.forFeature([BirdhouseModel, ResidencyModel])],
 })
 export class CoreModule {}
