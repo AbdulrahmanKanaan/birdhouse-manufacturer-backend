@@ -9,7 +9,12 @@ import {
 } from 'sequelize-typescript';
 import { ResidencyModel } from './residency.model';
 
-@Table({ tableName: 'birdhouses', timestamps: true, deletedAt: true })
+@Table({
+  tableName: 'birdhouses',
+  timestamps: true,
+  deletedAt: true,
+  paranoid: true,
+})
 export class BirdhouseModel extends Model {
   @IsUUID(4)
   @PrimaryKey

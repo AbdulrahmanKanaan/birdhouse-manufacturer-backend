@@ -7,7 +7,7 @@ export interface BirdhouseRepository {
     data: Partial<Birdhouse>,
   ): Promise<Birdhouse>;
   delete(filter: BirdhouseRepositoryTypes.DeleteFilter): Promise<void>;
-  findById(id: string): Promise<Birdhouse>;
+  findById(id: string): Promise<Birdhouse | null>;
   findAll(
     filters: BirdhouseRepositoryTypes.FindAllFilters,
     options: BirdhouseRepositoryTypes.FindAllOptions,

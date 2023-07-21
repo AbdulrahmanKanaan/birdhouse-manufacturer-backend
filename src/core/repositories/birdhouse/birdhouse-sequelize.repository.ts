@@ -1,10 +1,3 @@
-import { Inject } from '@nestjs/common';
-import { InjectModel } from '@nestjs/sequelize';
-import { Op } from 'sequelize';
-import {
-  BirdhouseMutationFailedException,
-  BirdhouseNotFoundException,
-} from '&/core/exceptions';
 import { BirdhouseModel } from '&/core/models';
 import { Birdhouse } from '&/domain/entities';
 import { BirdhouseMapper } from '&/domain/mappers';
@@ -12,6 +5,15 @@ import {
   BirdhouseRepository,
   BirdhouseRepositoryTypes,
 } from '&/domain/repositories';
+import {
+  EntityCreateFailedException,
+  EntityDeleteFailedException,
+  EntityNotFoundException,
+  EntityUpdateFailedException,
+} from '&/domain/repositories/exceptions';
+import { Inject } from '@nestjs/common';
+import { InjectModel } from '@nestjs/sequelize';
+import { Op } from 'sequelize';
 
 export class BirdhouseSequelizeRepository implements BirdhouseRepository {
   constructor(
@@ -27,7 +29,10 @@ export class BirdhouseSequelizeRepository implements BirdhouseRepository {
     try {
       await birdhouse.save();
     } catch (e) {
-      throw new BirdhouseMutationFailedException();
+      throw new EntityCreateFailedException({
+        entity: data,
+        error: e as Error,
+      });
     }
 
     return this.birdhouseMapper.toEntity(birdhouse);
@@ -42,14 +47,17 @@ export class BirdhouseSequelizeRepository implements BirdhouseRepository {
     });
 
     if (!birdhouse) {
-      throw new BirdhouseNotFoundException();
+      throw new EntityNotFoundException({ id: filters.id });
     }
 
     try {
       const newBirdhouse = await birdhouse.update(updatedBirdhouse);
       return this.birdhouseMapper.toEntity(newBirdhouse);
     } catch (e) {
-      throw new BirdhouseMutationFailedException();
+      throw new EntityUpdateFailedException({
+        id: filters.id,
+        error: e as Error,
+      });
     }
   }
 
@@ -61,19 +69,26 @@ export class BirdhouseSequelizeRepository implements BirdhouseRepository {
     });
 
     if (!birdhouse) {
-      throw new BirdhouseNotFoundException();
+      throw new EntityNotFoundException({ id: filter.id });
     }
 
-    await birdhouse.destroy();
+    try {
+      await birdhouse.destroy();
+    } catch (e) {
+      throw new EntityDeleteFailedException({
+        id: filter.id,
+        error: e as Error,
+      });
+    }
   }
 
-  public async findById(id: string): Promise<Birdhouse> {
+  public async findById(id: string): Promise<Birdhouse | null> {
     const birdhouse = await this.birdhouseModel.findOne({
       where: { id },
     });
 
     if (!birdhouse) {
-      throw new BirdhouseNotFoundException();
+      return null;
     }
 
     return this.birdhouseMapper.toEntity(birdhouse);
