@@ -9,10 +9,10 @@ export class Residency extends Entity<number> {
   birdhouse?: Birdhouse;
 
   constructor(
-    id: number | null,
+    id: number | undefined,
+    birdhouseId: string,
     birds: number,
     eggs: number,
-    birdhouseId: string,
     createdAt?: Date,
     updatedAt?: Date,
   ) {

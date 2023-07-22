@@ -13,7 +13,7 @@ export class Birdhouse extends Entity<string> {
   history?: Residency[];
 
   constructor(
-    id: string | null,
+    id: string | undefined,
     ubid: string,
     name: string,
     longitude: number,

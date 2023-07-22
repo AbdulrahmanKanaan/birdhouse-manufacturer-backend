@@ -1,9 +1,10 @@
 import { Module } from '@nestjs/common';
-
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { CoreModule } from './core/core.module';
 import { SequelizeModule } from '@nestjs/sequelize';
+import { AdminModule } from './admin/admin.module';
 import { getSequelizeConfig } from './core/config/sequelize.config';
+import { CoreModule } from './core/core.module';
+import { BirdModule } from './bird/bird.module';
 
 @Module({
   imports: [
@@ -14,6 +15,8 @@ import { getSequelizeConfig } from './core/config/sequelize.config';
       useFactory: getSequelizeConfig,
     }),
     CoreModule,
+    AdminModule,
+    BirdModule,
   ],
 })
 export class AppModule {}

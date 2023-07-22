@@ -1,4 +1,4 @@
-import { BirdhouseModel } from '&/core/models';
+import { BirdhouseModel, ResidencyModel } from '&/core/models';
 import { Birdhouse } from '&/domain/entities';
 import { BirdhouseMapper } from '&/domain/mappers';
 import {
@@ -32,6 +32,7 @@ describe('BirdhouseSequelizeRepository', () => {
   let birdhouseSequelizeRepository: BirdhouseSequelizeRepository;
   let birdhouseSequelizeMapper: BirdhouseSequelizeMapper;
   let birdhouseModel: typeof BirdhouseModel;
+  let residencyModel: typeof ResidencyModel;
 
   beforeEach(async () => {
     const moduleRef: TestingModule = await Test.createTestingModule({
@@ -52,6 +53,10 @@ describe('BirdhouseSequelizeRepository', () => {
             })),
           },
         },
+        {
+          provide: getModelToken(ResidencyModel),
+          useValue: {},
+        },
       ],
     }).compile();
 
@@ -61,6 +66,7 @@ describe('BirdhouseSequelizeRepository', () => {
     birdhouseSequelizeMapper =
       moduleRef.get<BirdhouseSequelizeMapper>(BirdhouseMapper);
     birdhouseModel = moduleRef.get(getModelToken(BirdhouseModel));
+    residencyModel = moduleRef.get(getModelToken(ResidencyModel));
   });
 
   describe('findById', () => {
@@ -91,11 +97,18 @@ describe('BirdhouseSequelizeRepository', () => {
         .mockReturnValueOnce(birdhouseEntity);
 
       // call the findById method of the repository
-      const result = await birdhouseSequelizeRepository.findById(id);
+      const result = await birdhouseSequelizeRepository.findOne(id);
 
-      // check if we are searching for the model using the id
+      // check if we are searching for the model using the id & if we are including the residency
       expect(birdhouseModel.findOne).toHaveBeenCalledWith({
         where: { id },
+        include: [
+          {
+            model: residencyModel,
+            order: [['createdAt', 'DESC']],
+            limit: 1,
+          },
+        ],
       });
 
       // check if the repository returned the expected entity
@@ -110,7 +123,7 @@ describe('BirdhouseSequelizeRepository', () => {
       jest.spyOn(birdhouseModel, 'findOne').mockResolvedValue(null);
 
       // call the findById method of the repository and assert that it returns null
-      const result = await birdhouseSequelizeRepository.findById(id);
+      const result = await birdhouseSequelizeRepository.findOne(id);
       expect(result).toBeNull();
     });
   });

@@ -25,7 +25,7 @@ export class BirdhouseSequelizeMapper
   }
 
   toEntity(model: BirdhouseModel): Birdhouse {
-    return new Birdhouse(
+    const birdhouse = new Birdhouse(
       model.id,
       model.ubid,
       model.name,
@@ -35,5 +35,7 @@ export class BirdhouseSequelizeMapper
       model.updatedAt,
       model.deletedAt,
     );
+    // birdhouse.residency = model.residency;
+    return birdhouse;
   }
 }

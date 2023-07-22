@@ -12,23 +12,23 @@ import { BirdhouseModel } from './birdhouse.model';
 @Table({ tableName: 'residencies', timestamps: true })
 export class ResidencyModel extends Model {
   @PrimaryKey
-  @Column
+  @Column({ autoIncrement: true })
   id!: number;
 
   @Column({
     allowNull: false,
-    type: DataType.DOUBLE,
+    type: DataType.INTEGER,
   })
   birds!: number;
 
   @Column({
     allowNull: false,
-    type: DataType.DOUBLE,
+    type: DataType.INTEGER,
   })
   eggs!: number;
 
   @ForeignKey(() => BirdhouseModel)
-  @Column
+  @Column({ allowNull: false })
   birdhouseId!: string;
 
   @BelongsTo(() => BirdhouseModel)

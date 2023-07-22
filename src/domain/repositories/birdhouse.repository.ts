@@ -3,31 +3,42 @@ import { Birdhouse } from '../entities';
 export interface BirdhouseRepository {
   create(data: Omit<Birdhouse, 'id'>): Promise<Birdhouse>;
   update(
-    filter: BirdhouseRepositoryTypes.UpdateFilter,
+    filter: BirdhouseRepoTypes.UpdateFilter,
     data: Partial<Birdhouse>,
   ): Promise<Birdhouse>;
-  delete(filter: BirdhouseRepositoryTypes.DeleteFilter): Promise<void>;
-  findById(id: string): Promise<Birdhouse | null>;
+  delete(filter: BirdhouseRepoTypes.DeleteFilter): Promise<void>;
+  findOne(
+    filter: BirdhouseRepoTypes.FindOneFilter,
+    options?: BirdhouseRepoTypes.FindOptions,
+  ): Promise<Birdhouse | null>;
   findAll(
-    filters: BirdhouseRepositoryTypes.FindAllFilters,
-    options: BirdhouseRepositoryTypes.FindAllOptions,
+    filters?: BirdhouseRepoTypes.FindAllFilters,
+    options?: BirdhouseRepoTypes.FindAllOptions,
   ): Promise<Birdhouse[]>;
-  count(filters: BirdhouseRepositoryTypes.FindAllFilters): Promise<number>;
+  count(filters?: BirdhouseRepoTypes.FindAllFilters): Promise<number>;
 }
 
 export const BirdhouseRepository = Symbol('BirdhouseRepository');
 
-export namespace BirdhouseRepositoryTypes {
-  export type UpdateFilter = {
+export namespace BirdhouseRepoTypes {
+  export type FindOneFilter = {
     id: string;
   };
 
-  export type DeleteFilter = {
-    id: string;
+  export type FindOptions = {
+    relations?: {
+      residency?: boolean;
+    };
   };
+
+  export type UpdateFilter = FindOneFilter;
+
+  export type DeleteFilter = FindOneFilter;
 
   export type FindAllFilters = {
+    id?: string[];
     name?: string;
+    ubid?: string[];
   };
 
   export type FindAllOptions = {
@@ -37,5 +48,5 @@ export namespace BirdhouseRepositoryTypes {
       by: string;
       direction: 'ASC' | 'DESC';
     };
-  };
+  } & FindOptions;
 }

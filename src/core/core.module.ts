@@ -1,24 +1,39 @@
+import { BirdhouseMapper, ResidencyMapper } from '&/domain/mappers';
+import {
+  BirdhouseRepository,
+  ResidencyRepository,
+} from '&/domain/repositories';
 import { Module, Provider } from '@nestjs/common';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { BirdhouseModel, ResidencyModel } from './models';
-import { BirdhouseRepository } from '&/domain/repositories';
-import { BirdhouseSequelizeRepository } from './repositories/birdhouse';
-import { BirdhouseMapper } from '&/domain/mappers';
-import { BirdhouseSequelizeMapper } from './repositories/birdhouse/birdhouse-sequelize.mapper';
+import {
+  BirdhouseSequelizeRepository,
+  BirdhouseSequelizeMapper,
+} from './repositories/birdhouse';
+import {
+  ResidencySequelizeRepository,
+  ResidencySequelizeMapper,
+} from './repositories/residency';
 
 const repositories: Provider[] = [
   {
     provide: BirdhouseRepository,
     useClass: BirdhouseSequelizeRepository,
   },
+  {
+    provide: ResidencyRepository,
+    useClass: ResidencySequelizeRepository,
+  },
 ];
 
 const mappers: Provider[] = [
   { provide: BirdhouseMapper, useClass: BirdhouseSequelizeMapper },
+  { provide: ResidencyMapper, useClass: ResidencySequelizeMapper },
 ];
 
 @Module({
   providers: [...repositories, ...mappers],
   imports: [SequelizeModule.forFeature([BirdhouseModel, ResidencyModel])],
+  exports: [...repositories],
 })
 export class CoreModule {}

@@ -1,10 +1,7 @@
 import { BirdhouseModel } from '&/core/models';
 import { Birdhouse } from '&/domain/entities';
 import { BirdhouseMapper } from '&/domain/mappers';
-import {
-  BirdhouseRepository,
-  BirdhouseRepositoryTypes,
-} from '&/domain/repositories';
+import { BirdhouseRepoTypes, BirdhouseRepository } from '&/domain/repositories';
 import {
   EntityCreateFailedException,
   EntityDeleteFailedException,
@@ -13,17 +10,21 @@ import {
 } from '&/domain/repositories/exceptions';
 import { Inject } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
-import { Op } from 'sequelize';
+import { Op, WhereOptions } from 'sequelize';
 
 export class BirdhouseSequelizeRepository implements BirdhouseRepository {
   constructor(
     @InjectModel(BirdhouseModel)
     private readonly birdhouseModel: typeof BirdhouseModel,
     @Inject(BirdhouseMapper)
-    private readonly birdhouseMapper: BirdhouseMapper<BirdhouseModel>,
+    private readonly mapper: BirdhouseMapper<BirdhouseModel>,
   ) {}
 
-  public async findById(id: string): Promise<Birdhouse | null> {
+  public async findOne(
+    filters: BirdhouseRepoTypes.FindOneFilter,
+  ): Promise<Birdhouse | null> {
+    const { id } = filters;
+
     const birdhouse = await this.birdhouseModel.findOne({
       where: { id },
     });
@@ -32,50 +33,68 @@ export class BirdhouseSequelizeRepository implements BirdhouseRepository {
       return null;
     }
 
-    return this.birdhouseMapper.toEntity(birdhouse);
+    return this.mapper.toEntity(birdhouse);
   }
 
   public async findAll(
-    filters: BirdhouseRepositoryTypes.FindAllFilters,
-    options: BirdhouseRepositoryTypes.FindAllOptions,
+    filters?: BirdhouseRepoTypes.FindAllFilters,
+    options?: BirdhouseRepoTypes.FindAllOptions,
   ): Promise<Birdhouse[]> {
     let order = undefined;
-    if (options.order) {
+    if (options?.order) {
       order = [options.order.by, options.order.direction];
     }
 
+    const where = filters && this.mapWhereFilters(filters);
+
     const birdhouses = await this.birdhouseModel.findAll({
-      where: {
-        name: {
-          [Op.substring]: filters.name,
-        },
-      },
-      limit: options.limit,
-      offset: options.skip,
+      where,
+      limit: options?.limit,
+      offset: options?.skip,
       order,
     });
 
-    return birdhouses.map((birdhouse) =>
-      this.birdhouseMapper.toEntity(birdhouse),
-    );
+    return birdhouses.map((birdhouse) => this.mapper.toEntity(birdhouse));
   }
 
   public async count(
-    filters: BirdhouseRepositoryTypes.FindAllFilters,
+    filters?: BirdhouseRepoTypes.FindAllFilters,
   ): Promise<number> {
+    const where = filters && this.mapWhereFilters(filters);
+
     const count = await this.birdhouseModel.count({
-      where: {
-        name: {
-          [Op.substring]: filters.name,
-        },
-      },
+      where,
     });
 
     return count;
   }
 
+  private mapWhereFilters(filters?: BirdhouseRepoTypes.FindAllFilters) {
+    const where: WhereOptions<BirdhouseModel> = {};
+
+    if (filters?.id) {
+      where.id = {
+        [Op.in]: filters.id,
+      };
+    }
+
+    if (filters?.name) {
+      where.name = {
+        [Op.substring]: filters.name,
+      };
+    }
+
+    if (filters?.ubid) {
+      where.ubid = {
+        [Op.in]: filters.ubid,
+      };
+    }
+
+    return where;
+  }
+
   public async create(data: Omit<Birdhouse, 'id'>): Promise<Birdhouse> {
-    const birdhouse = this.birdhouseMapper.toModel(data as Birdhouse);
+    const birdhouse = this.mapper.toModel(data as Birdhouse);
 
     try {
       await birdhouse.save();
@@ -86,11 +105,11 @@ export class BirdhouseSequelizeRepository implements BirdhouseRepository {
       });
     }
 
-    return this.birdhouseMapper.toEntity(birdhouse);
+    return this.mapper.toEntity(birdhouse);
   }
 
   public async update(
-    filters: BirdhouseRepositoryTypes.UpdateFilter,
+    filters: BirdhouseRepoTypes.UpdateFilter,
     updatedBirdhouse: Partial<Birdhouse>,
   ): Promise<Birdhouse> {
     const birdhouse = await this.birdhouseModel.findOne({
@@ -103,7 +122,7 @@ export class BirdhouseSequelizeRepository implements BirdhouseRepository {
 
     try {
       const newBirdhouse = await birdhouse.update(updatedBirdhouse);
-      return this.birdhouseMapper.toEntity(newBirdhouse);
+      return this.mapper.toEntity(newBirdhouse);
     } catch (e) {
       throw new EntityUpdateFailedException({
         id: filters.id,
@@ -112,9 +131,7 @@ export class BirdhouseSequelizeRepository implements BirdhouseRepository {
     }
   }
 
-  public async delete(
-    filter: BirdhouseRepositoryTypes.DeleteFilter,
-  ): Promise<void> {
+  public async delete(filter: BirdhouseRepoTypes.DeleteFilter): Promise<void> {
     const birdhouse = await this.birdhouseModel.findOne({
       where: { id: filter.id },
     });

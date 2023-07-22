@@ -1,6 +1,7 @@
 import { UUIDV4 } from 'sequelize';
 import {
   Column,
+  DataType,
   HasMany,
   IsUUID,
   Model,
@@ -38,11 +39,13 @@ export class BirdhouseModel extends Model {
 
   @Column({
     allowNull: false,
+    type: DataType.DOUBLE,
   })
   longitude!: number;
 
   @Column({
     allowNull: false,
+    type: DataType.DOUBLE,
   })
   latitude!: number;
 
