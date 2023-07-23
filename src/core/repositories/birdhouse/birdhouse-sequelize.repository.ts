@@ -156,21 +156,48 @@ export class BirdhouseSequelizeRepository implements BirdhouseRepository {
   }
 
   public async delete(filter: BirdhouseRepoTypes.DeleteFilter): Promise<void> {
-    const birdhouse = await this.birdhouseModel.findOne({
-      where: { id: filter.id },
-    });
+    const { id } = filter;
 
-    if (!birdhouse) {
-      throw new EntityNotFoundException({ id: filter.id });
+    const ids: string[] = [];
+
+    if (typeof id === 'string') {
+      ids.push(id);
+    } else {
+      ids.push(...id);
     }
 
     try {
-      await birdhouse.destroy();
+      await this.birdhouseModel.destroy({
+        where: { id: { [Op.in]: ids } },
+      });
     } catch (e) {
       throw new EntityDeleteFailedException({
         id: filter.id,
         error: e as Error,
       });
     }
+  }
+
+  public async getOutdatedBirdhouses(date: Date): Promise<Birdhouse[]> {
+    const birdhouses = await this.birdhouseModel.findAll({
+      where: {
+        updatedAt: {
+          [Op.lt]: date,
+        },
+      },
+      include: [
+        {
+          model: this.residencyModel,
+          as: 'residency',
+          where: {
+            createdAt: {
+              [Op.lt]: date,
+            },
+          },
+        },
+      ],
+    });
+
+    return birdhouses.map((birdhouse) => this.mapper.toEntity(birdhouse));
   }
 }

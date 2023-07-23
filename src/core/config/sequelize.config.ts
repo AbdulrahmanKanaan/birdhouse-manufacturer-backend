@@ -13,5 +13,6 @@ export const getSequelizeConfig = (
     database: configService.get<string>('DB_NAME'),
     synchronize: true,
     autoLoadModels: true,
+    logging: false,
   };
 };

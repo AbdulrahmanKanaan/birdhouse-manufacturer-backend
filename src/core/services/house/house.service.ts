@@ -1,9 +1,13 @@
-import { BirdhouseNotFoundException } from '&/bird/exceptions';
+import {
+  BirdhouseDeleteFailedException,
+  BirdhouseNotFoundException,
+} from '&/bird/exceptions';
 import { Birdhouse } from '&/domain/entities';
 import {
   BirdhouseRepository,
   ResidencyRepository,
 } from '&/domain/repositories';
+import { EntityDeleteFailedException } from '&/domain/repositories/exceptions';
 import { Inject, Injectable } from '@nestjs/common';
 
 @Injectable()
@@ -24,5 +28,25 @@ export class HouseService {
     if (!birdhouse) throw new BirdhouseNotFoundException(id);
 
     return birdhouse;
+  }
+
+  public async destroyOutdatedBirdhouses(): Promise<void> {
+    // get last year date
+    const date = new Date();
+    date.setFullYear(date.getFullYear() - 1);
+
+    const outdatedBirdhouses = await this.birdhouseRepo.getOutdatedBirdhouses(
+      date,
+    );
+
+    try {
+      await this.birdhouseRepo.delete({
+        id: outdatedBirdhouses.map((b) => b.id!),
+      });
+    } catch (e) {
+      if (e instanceof EntityDeleteFailedException) {
+        throw new BirdhouseDeleteFailedException(e.message);
+      }
+    }
   }
 }

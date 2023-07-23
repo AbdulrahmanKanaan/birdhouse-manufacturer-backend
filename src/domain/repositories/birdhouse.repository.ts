@@ -16,6 +16,7 @@ export interface BirdhouseRepository {
     options?: BirdhouseRepoTypes.FindAllOptions,
   ): Promise<Birdhouse[]>;
   count(filters?: BirdhouseRepoTypes.FindAllFilters): Promise<number>;
+  getOutdatedBirdhouses(date: Date): Promise<Birdhouse[]>;
 }
 
 export const BirdhouseRepository = Symbol('BirdhouseRepository');
@@ -33,7 +34,9 @@ export namespace BirdhouseRepoTypes {
 
   export type UpdateFilter = FindOneFilter;
 
-  export type DeleteFilter = FindOneFilter;
+  export type DeleteFilter = {
+    id: string | string[];
+  };
 
   export type FindAllFilters = {
     id?: string[];

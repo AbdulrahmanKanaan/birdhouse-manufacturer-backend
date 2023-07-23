@@ -15,6 +15,7 @@ import {
   ResidencySequelizeMapper,
 } from './repositories/residency';
 import { HouseService } from './services';
+import { BirdhouseCron } from './cronjobs/birdhouse.cron';
 
 const repositories: Provider[] = [
   {
@@ -33,7 +34,7 @@ const mappers: Provider[] = [
 ];
 
 @Module({
-  providers: [...repositories, ...mappers, HouseService],
+  providers: [...repositories, ...mappers, HouseService, BirdhouseCron],
   imports: [SequelizeModule.forFeature([BirdhouseModel, ResidencyModel])],
   exports: [...repositories, HouseService],
 })
