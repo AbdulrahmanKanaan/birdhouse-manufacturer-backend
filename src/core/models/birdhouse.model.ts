@@ -1,7 +1,9 @@
 import { UUIDV4 } from 'sequelize';
 import {
+  BelongsTo,
   Column,
   DataType,
+  ForeignKey,
   HasMany,
   IsUUID,
   Model,
@@ -49,6 +51,16 @@ export class BirdhouseModel extends Model {
   })
   latitude!: number;
 
+  @ForeignKey(() => ResidencyModel)
+  @Column({
+    allowNull: true,
+    type: DataType.INTEGER,
+  })
+  residencyId!: number | null;
+
   @HasMany(() => ResidencyModel)
   history?: ResidencyModel[];
+
+  @BelongsTo(() => ResidencyModel, { onDelete: 'SET NULL' })
+  residency?: ResidencyModel;
 }

@@ -37,13 +37,14 @@ export class BirdService {
       registerDto.name,
       registerDto.longitude,
       registerDto.latitude,
+      null,
     );
 
     try {
       return await this.birdhouseRepo.create(birdhouse);
     } catch (e) {
       if (e instanceof EntityCreateFailedException) {
-        console.log(e.error?.message);
+        // TODO: Handle this
       }
       throw e;
     }
@@ -69,7 +70,7 @@ export class BirdService {
     birdhouseId: string,
     residencyDto: AddResidencyDto,
   ): Promise<Birdhouse> | never {
-    const birdhouse = await this.birdhouseRepo.findOne({ id: birdhouseId });
+    let birdhouse = await this.birdhouseRepo.findOne({ id: birdhouseId });
     if (!birdhouse) throw new BirdhouseNotFoundException(birdhouseId);
 
     let residency = new Residency(
@@ -83,24 +84,21 @@ export class BirdService {
       residency = await this.residencyRepo.create(residency);
     } catch (e) {
       if (e instanceof EntityCreateFailedException) {
-        console.log(123, e.error?.message);
+        // TODO: Handle error
       }
       throw e;
     }
 
-    birdhouse.residency = residency;
-
-    return birdhouse;
-  }
-
-  public async getBirdhouse(id: string): Promise<Birdhouse> | never {
-    const birdhouse = await this.birdhouseRepo.findOne({ id });
-    if (!birdhouse) throw new BirdhouseNotFoundException(id);
-
-    const residency = await this.residencyRepo.getLatestResidency(id);
-    if (residency) {
-      birdhouse.residency = residency;
+    try {
+      birdhouse = await this.birdhouseRepo.update(
+        { id: birdhouseId },
+        { residencyId: residency.id },
+      );
+    } catch (e) {
+      // TODO: handle this
     }
+
+    birdhouse.residency = residency;
 
     return birdhouse;
   }

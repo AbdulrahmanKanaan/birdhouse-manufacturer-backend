@@ -7,7 +7,7 @@ export class Birdhouse extends Entity<string> {
   longitude: number;
   latitude: number;
 
-  residencyId?: number;
+  residencyId!: number | null;
   residency?: Residency;
 
   history?: Residency[];
@@ -18,6 +18,7 @@ export class Birdhouse extends Entity<string> {
     name: string,
     longitude: number,
     latitude: number,
+    residencyId: number | null,
     createdAt?: Date,
     updatedAt?: Date,
     deletedAt?: Date | null,
@@ -27,5 +28,6 @@ export class Birdhouse extends Entity<string> {
     this.name = name;
     this.longitude = longitude;
     this.latitude = latitude;
+    this.residencyId = residencyId;
   }
 }

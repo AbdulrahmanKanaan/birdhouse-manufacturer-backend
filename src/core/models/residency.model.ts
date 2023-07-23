@@ -9,7 +9,10 @@ import {
 } from 'sequelize-typescript';
 import { BirdhouseModel } from './birdhouse.model';
 
-@Table({ tableName: 'residencies', timestamps: true })
+@Table({
+  tableName: 'residencies',
+  timestamps: true,
+})
 export class ResidencyModel extends Model {
   @PrimaryKey
   @Column({ autoIncrement: true })

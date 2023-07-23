@@ -9,20 +9,22 @@ import {
   Param,
   Patch,
   Post,
-  Req,
   UseGuards,
 } from '@nestjs/common';
+import { AuthGuard, CanManipulateGuard } from '../auth';
 import { RegisterDto } from '../dto';
+import { AddResidencyDto } from '../dto/add-residency.dto';
 import { UpdateHouseDto } from '../dto/update-house.dto';
 import { BirdhousePresenter, RegisterPresenter } from '../presenter';
 import { BirdService } from '../services';
-import { AddResidencyDto } from '../dto/add-residency.dto';
-import { AuthGuard, CanManipulateGuard } from '../auth';
-import { Request } from 'express';
+import { HouseService as HouseService } from '&/core/services';
 
 @Controller('house')
 export class BirdController {
-  constructor(private readonly birdService: BirdService) {}
+  constructor(
+    private readonly birdService: BirdService,
+    private readonly houseService: HouseService,
+  ) {}
 
   @Post('/')
   @HttpCode(HttpStatus.CREATED)
@@ -37,12 +39,8 @@ export class BirdController {
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard, CanManipulateGuard)
   @UsePresenter(BirdhousePresenter)
-  public async getBirdhouse(
-    @Param('id') id: string,
-    @Req() req: Request,
-  ): Promise<Birdhouse> {
-    console.log((req as any).housesIds);
-    return await this.birdService.getBirdhouse(id);
+  public async getBirdhouse(@Param('id') id: string): Promise<Birdhouse> {
+    return await this.houseService.getBirdhouse(id);
   }
 
   @Patch(':id')

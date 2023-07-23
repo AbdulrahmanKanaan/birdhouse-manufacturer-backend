@@ -12,7 +12,6 @@ export class ResidencySequelizeMapper
   ) {}
 
   toModel(entity: Partial<Residency>): ResidencyModel {
-    console.log(entity);
     return this.residencyModel.build({
       id: entity.id,
       birdhouseId: entity.birdhouseId,

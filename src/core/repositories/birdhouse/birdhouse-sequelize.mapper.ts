@@ -1,6 +1,7 @@
+import { BirdhouseModel, ResidencyModel } from '&/core/models';
 import { Birdhouse } from '&/domain/entities';
-import { BirdhouseMapper } from '&/domain/mappers';
-import { BirdhouseModel } from '&/core/models';
+import { BirdhouseMapper, ResidencyMapper } from '&/domain/mappers';
+import { Inject } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 
 export class BirdhouseSequelizeMapper
@@ -9,6 +10,8 @@ export class BirdhouseSequelizeMapper
   constructor(
     @InjectModel(BirdhouseModel)
     private readonly birdhouseModel: typeof BirdhouseModel,
+    @Inject(ResidencyMapper)
+    private readonly residencyMapper: ResidencyMapper<ResidencyModel>,
   ) {}
 
   toModel(entity: Partial<Birdhouse>): BirdhouseModel {
@@ -18,6 +21,7 @@ export class BirdhouseSequelizeMapper
       name: entity.name,
       latitude: entity.latitude,
       longitude: entity.longitude,
+      residencyId: entity.residencyId,
       createdAt: entity.createdAt,
       updatedAt: entity.updatedAt,
       deletedAt: entity.deletedAt,
@@ -31,11 +35,15 @@ export class BirdhouseSequelizeMapper
       model.name,
       model.latitude,
       model.longitude,
+      model.residencyId,
       model.createdAt,
       model.updatedAt,
       model.deletedAt,
     );
-    // birdhouse.residency = model.residency;
+    birdhouse.residency =
+      model.residency && this.residencyMapper.toEntity(model.residency);
+    birdhouse.history =
+      model.history && model.history.map(this.residencyMapper.toEntity);
     return birdhouse;
   }
 }

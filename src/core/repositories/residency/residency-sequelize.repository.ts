@@ -23,7 +23,7 @@ export class ResidencySequelizeRepository implements ResidencyRepository {
       throw new EntityCreateFailedException({ error: e as Error });
     }
 
-    return model;
+    return this.mapper.toEntity(model);
   }
 
   public async findByBirdhouseId(birdhouseId: string): Promise<Residency[]> {
@@ -40,18 +40,5 @@ export class ResidencySequelizeRepository implements ResidencyRepository {
     });
 
     return count;
-  }
-
-  public async getLatestResidency(
-    birdhouseId: string,
-  ): Promise<Residency | null> {
-    const residency = await this.residencyModel.findOne({
-      where: { birdhouseId },
-      order: [['createdAt', 'DESC']],
-    });
-
-    if (!residency) return null;
-
-    return this.mapper.toEntity(residency);
   }
 }

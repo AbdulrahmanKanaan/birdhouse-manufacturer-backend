@@ -14,6 +14,7 @@ import {
   ResidencySequelizeRepository,
   ResidencySequelizeMapper,
 } from './repositories/residency';
+import { HouseService } from './services';
 
 const repositories: Provider[] = [
   {
@@ -32,8 +33,8 @@ const mappers: Provider[] = [
 ];
 
 @Module({
-  providers: [...repositories, ...mappers],
+  providers: [...repositories, ...mappers, HouseService],
   imports: [SequelizeModule.forFeature([BirdhouseModel, ResidencyModel])],
-  exports: [...repositories],
+  exports: [...repositories, HouseService],
 })
 export class CoreModule {}

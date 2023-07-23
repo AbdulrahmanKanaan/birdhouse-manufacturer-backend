@@ -1,4 +1,4 @@
-import { BirdhouseModel } from '&/core/models';
+import { BirdhouseModel, ResidencyModel } from '&/core/models';
 import { Birdhouse } from '&/domain/entities';
 import { BirdhouseMapper } from '&/domain/mappers';
 import { BirdhouseRepoTypes, BirdhouseRepository } from '&/domain/repositories';
@@ -10,7 +10,7 @@ import {
 } from '&/domain/repositories/exceptions';
 import { Inject } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
-import { Op, WhereOptions } from 'sequelize';
+import { Includeable, Op, WhereOptions } from 'sequelize';
 
 export class BirdhouseSequelizeRepository implements BirdhouseRepository {
   constructor(
@@ -18,15 +18,21 @@ export class BirdhouseSequelizeRepository implements BirdhouseRepository {
     private readonly birdhouseModel: typeof BirdhouseModel,
     @Inject(BirdhouseMapper)
     private readonly mapper: BirdhouseMapper<BirdhouseModel>,
+    @InjectModel(ResidencyModel)
+    private readonly residencyModel: typeof ResidencyModel,
   ) {}
 
   public async findOne(
     filters: BirdhouseRepoTypes.FindOneFilter,
+    options?: BirdhouseRepoTypes.FindOptions,
   ): Promise<Birdhouse | null> {
     const { id } = filters;
 
+    const includes = this.mapRelations(options?.relations);
+
     const birdhouse = await this.birdhouseModel.findOne({
       where: { id },
+      include: includes,
     });
 
     if (!birdhouse) {
@@ -47,11 +53,14 @@ export class BirdhouseSequelizeRepository implements BirdhouseRepository {
 
     const where = filters && this.mapWhereFilters(filters);
 
+    const includes = this.mapRelations(options?.relations);
+
     const birdhouses = await this.birdhouseModel.findAll({
       where,
       limit: options?.limit,
       offset: options?.skip,
       order,
+      include: includes,
     });
 
     return birdhouses.map((birdhouse) => this.mapper.toEntity(birdhouse));
@@ -91,6 +100,21 @@ export class BirdhouseSequelizeRepository implements BirdhouseRepository {
     }
 
     return where;
+  }
+
+  private mapRelations(
+    relations: BirdhouseRepoTypes.FindOptions['relations'] = {},
+  ) {
+    const includes: Includeable[] = [];
+
+    if (relations.residency) {
+      includes.push({
+        model: this.residencyModel,
+        as: 'residency',
+      });
+    }
+
+    return includes;
   }
 
   public async create(data: Omit<Birdhouse, 'id'>): Promise<Birdhouse> {
