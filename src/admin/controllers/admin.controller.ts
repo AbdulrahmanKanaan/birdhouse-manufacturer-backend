@@ -9,6 +9,7 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  Query,
 } from '@nestjs/common';
 import { ListHousesDto } from '../dto/list-houses.dto';
 import {
@@ -28,7 +29,7 @@ export class AdminController {
   @Get('/')
   @UsePresenter(ListHousesPresenter)
   async listHouses(
-    @Body() listHousesDto: ListHousesDto,
+    @Query() listHousesDto: ListHousesDto,
   ): Promise<Page<Birdhouse>> {
     return this.adminService.listBirdhouses(listHousesDto);
   }
@@ -45,7 +46,7 @@ export class AdminController {
   @UsePresenter(GetHistoryPresenter)
   public async getHistory(
     @Param('id') id: string,
-    @Body() listHistoryDto: ListHousesDto,
+    @Query() listHistoryDto: ListHousesDto,
   ): Promise<Page<Residency>> {
     return await this.adminService.getHistory(id, listHistoryDto);
   }

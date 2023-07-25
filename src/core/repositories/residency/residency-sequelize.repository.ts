@@ -1,7 +1,7 @@
 import { ResidencyModel } from '&/core/models';
 import { Residency } from '&/domain/entities';
 import { ResidencyMapper } from '&/domain/mappers';
-import { ResidencyRepository } from '&/domain/repositories';
+import { ResidencyRepoTypes, ResidencyRepository } from '&/domain/repositories';
 import { EntityCreateFailedException } from '&/domain/repositories/exceptions';
 import { Inject } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
@@ -26,9 +26,14 @@ export class ResidencySequelizeRepository implements ResidencyRepository {
     return this.mapper.toEntity(model);
   }
 
-  public async findByBirdhouseId(birdhouseId: string): Promise<Residency[]> {
+  public async findByBirdhouseId(
+    birdhouseId: string,
+    options?: ResidencyRepoTypes.FindAllOptions,
+  ): Promise<Residency[]> {
     const residencies = await this.residencyModel.findAll({
       where: { birdhouseId },
+      limit: options?.limit,
+      offset: options?.skip,
     });
 
     return residencies.map((residency) => this.mapper.toEntity(residency));
