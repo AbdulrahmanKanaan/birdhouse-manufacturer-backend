@@ -8,14 +8,15 @@ import {
   EntityNotFoundException,
   EntityUpdateFailedException,
 } from '&/domain/repositories/exceptions';
+import { LoggerService } from '&/logger/logger.service';
 import { Inject, Injectable } from '@nestjs/common';
 import { v4 as uuid } from 'uuid';
 import { RegisterDto, UpdateHouseDto } from '../dto';
+import { AddResidencyDto } from '../dto/add-residency.dto';
 import {
   BirdhouseNotFoundException,
   BirdhouseUpdateFailedException,
 } from '../exceptions';
-import { AddResidencyDto } from '../dto/add-residency.dto';
 
 @Injectable()
 export class BirdService {
@@ -24,7 +25,10 @@ export class BirdService {
     private readonly birdhouseRepo: BirdhouseRepository,
     @Inject(ResidencyRepository)
     private readonly residencyRepo: ResidencyRepository,
-  ) {}
+    private readonly logger: LoggerService,
+  ) {
+    this.logger.setContext('BIRD ACTION');
+  }
 
   public async createBirdhouse(
     registerDto: RegisterDto,
@@ -41,7 +45,12 @@ export class BirdService {
     );
 
     try {
-      return await this.birdhouseRepo.create(birdhouse);
+      const createdHouse = await this.birdhouseRepo.create(birdhouse);
+      this.logger.log({
+        message: 'Birdhouse created',
+        birdhouse: createdHouse,
+      });
+      return createdHouse;
     } catch (e) {
       if (e instanceof EntityCreateFailedException) {
         // TODO: Handle this
@@ -55,7 +64,12 @@ export class BirdService {
     updateHouseDto: UpdateHouseDto,
   ): Promise<Birdhouse> | never {
     try {
-      return await this.birdhouseRepo.update({ id }, updateHouseDto);
+      const birdhouse = await this.birdhouseRepo.update({ id }, updateHouseDto);
+      this.logger.log({
+        message: 'Birdhouse updated',
+        birdhouse,
+      });
+      return birdhouse;
     } catch (e) {
       if (e instanceof EntityUpdateFailedException) {
         throw new BirdhouseUpdateFailedException(id);
@@ -99,6 +113,12 @@ export class BirdService {
     }
 
     birdhouse.residency = residency;
+
+    this.logger.log({
+      message: 'Residency added',
+      birdhouse,
+      residency,
+    });
 
     return birdhouse;
   }

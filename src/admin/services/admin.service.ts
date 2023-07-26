@@ -1,4 +1,5 @@
 import { Page } from '&/common/types';
+import { paramsToPage } from '&/common/utils/pagination';
 import { Birdhouse, Residency } from '&/domain/entities';
 import {
   BirdhouseRepository,
@@ -6,9 +7,8 @@ import {
 } from '&/domain/repositories';
 import { Inject, Injectable } from '@nestjs/common';
 import { BirdhouseNotFoundException } from '../../bird/exceptions';
-import { ListHousesDto } from '../dto/list-houses.dto';
 import { ListHistoryDto } from '../dto';
-import { paramsToPage } from '&/common/utils/pagination';
+import { ListHousesDto } from '../dto/list-houses.dto';
 
 @Injectable()
 export class AdminService {
