@@ -23,13 +23,22 @@ export class AdminService {
     listHousesDto: ListHousesDto,
   ): Promise<Page<Birdhouse>> {
     const { page, perPage, name } = listHousesDto;
+
     const count = await this.birdhouseRepo.count({ name });
 
     const { skip, limit } = paramsToPage(page, perPage);
 
     const houses = await this.birdhouseRepo.findAll(
       { name },
-      { skip, limit, relations: { residency: true } },
+      {
+        skip,
+        limit,
+        relations: { residency: true },
+        order: {
+          by: 'createdAt',
+          direction: 'ASC',
+        },
+      },
     );
 
     return new Page(houses, count, page, perPage);
