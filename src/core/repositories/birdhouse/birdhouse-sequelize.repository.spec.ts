@@ -6,7 +6,6 @@ import {
   EntityValidationException,
   RepositoryException,
 } from '&/domain/repositories/exceptions';
-import { LoggerService } from '&/logger/logger.service';
 import { getModelToken } from '@nestjs/sequelize';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Op, ValidationError } from 'sequelize';
@@ -15,7 +14,6 @@ import { BirdhouseSequelizeRepository } from './birdhouse-sequelize.repository';
 
 describe('BirdhouseSequelizeRepository', () => {
   let repo: BirdhouseSequelizeRepository;
-  let mapper: BirdhouseMapper<BirdhouseModel>;
   let birdhouseModel: typeof BirdhouseModel;
   let residencyModel: typeof ResidencyModel;
 
@@ -46,14 +44,12 @@ describe('BirdhouseSequelizeRepository', () => {
           },
         },
         { provide: getModelToken(ResidencyModel), useValue: {} },
-        { provide: LoggerService, useValue: { log: jest.fn() } },
       ],
     }).compile();
 
     repo = moduleRef.get(BirdhouseSequelizeRepository);
     birdhouseModel = moduleRef.get(getModelToken(BirdhouseModel));
     residencyModel = moduleRef.get(getModelToken(ResidencyModel));
-    mapper = moduleRef.get(BirdhouseMapper);
 
     id = uuid();
     ubid = uuid();
@@ -216,9 +212,6 @@ describe('BirdhouseSequelizeRepository', () => {
     });
 
     it('should throw a EntityValidationException if the model save threw ValidationError', async () => {
-      // the model instance that should be created by Sequelize
-      const birdhouseModelInstance = mapper.toModel(birdhouseData);
-
       // the error returned when saving data using the model
       jest
         .spyOn(birdhouseModelInstance, 'save')
