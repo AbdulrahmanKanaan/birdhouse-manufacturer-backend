@@ -9,7 +9,13 @@ import {
 } from '&/domain/repositories/exceptions';
 import { Inject } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
-import { Includeable, Op, ValidationError, WhereOptions } from 'sequelize';
+import {
+  Includeable,
+  Op,
+  Order,
+  ValidationError,
+  WhereOptions,
+} from 'sequelize';
 
 export class BirdhouseSequelizeRepository implements BirdhouseRepository {
   constructor(
@@ -45,9 +51,9 @@ export class BirdhouseSequelizeRepository implements BirdhouseRepository {
     filters?: BirdhouseRepoTypes.FindAllFilters,
     options?: BirdhouseRepoTypes.FindAllOptions,
   ): Promise<Birdhouse[]> {
-    let order = undefined;
+    let order: Order | undefined = undefined;
     if (options?.order) {
-      order = [options.order.by, options.order.direction];
+      order = [[options.order.by, options.order.direction]];
     }
 
     const where = filters && this.mapWhereFilters(filters);
