@@ -1,7 +1,7 @@
 import { BirdhouseModel, ResidencyModel } from '&/core/models';
 import { Birdhouse } from '&/domain/entities';
 import { BirdhouseMapper, ResidencyMapper } from '&/domain/mappers';
-import { Inject } from '@nestjs/common';
+import { Inject, forwardRef } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 
 export class BirdhouseSequelizeMapper
@@ -10,7 +10,7 @@ export class BirdhouseSequelizeMapper
   constructor(
     @InjectModel(BirdhouseModel)
     private readonly birdhouseModel: typeof BirdhouseModel,
-    @Inject(ResidencyMapper)
+    @Inject(forwardRef(() => ResidencyMapper))
     private readonly residencyMapper: ResidencyMapper<ResidencyModel>,
   ) {}
 

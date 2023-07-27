@@ -1,6 +1,7 @@
-import { ResidencyModel } from '&/core/models';
+import { BirdhouseModel, ResidencyModel } from '&/core/models';
 import { Residency } from '&/domain/entities';
-import { ResidencyMapper } from '&/domain/mappers';
+import { BirdhouseMapper, ResidencyMapper } from '&/domain/mappers';
+import { Inject, forwardRef } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 
 export class ResidencySequelizeMapper
@@ -9,6 +10,8 @@ export class ResidencySequelizeMapper
   constructor(
     @InjectModel(ResidencyModel)
     private readonly residencyModel: typeof ResidencyModel,
+    @Inject(forwardRef(() => BirdhouseMapper))
+    private readonly birdhouseMapper: BirdhouseMapper<BirdhouseModel>,
   ) {}
 
   toModel(entity: Partial<Residency>): ResidencyModel {
@@ -23,7 +26,7 @@ export class ResidencySequelizeMapper
   }
 
   toEntity(model: ResidencyModel): Residency {
-    return new Residency(
+    const residency = new Residency(
       model.id,
       model.birdhouseId,
       model.birds,
@@ -31,5 +34,8 @@ export class ResidencySequelizeMapper
       model.createdAt,
       model.updatedAt,
     );
+    residency.birdhouse =
+      model.birdhouse && this.birdhouseMapper.toEntity(model.birdhouse);
+    return residency;
   }
 }
