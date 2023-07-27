@@ -3,14 +3,13 @@ import { Birdhouse } from '&/domain/entities';
 import { BirdhouseMapper } from '&/domain/mappers';
 import { BirdhouseRepoTypes, BirdhouseRepository } from '&/domain/repositories';
 import {
-  EntityCreateFailedException,
-  EntityDeleteFailedException,
   EntityNotFoundException,
-  EntityUpdateFailedException,
+  EntityValidationException,
+  RepositoryException,
 } from '&/domain/repositories/exceptions';
 import { Inject } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
-import { Includeable, Op, WhereOptions } from 'sequelize';
+import { Includeable, Op, ValidationError, WhereOptions } from 'sequelize';
 
 export class BirdhouseSequelizeRepository implements BirdhouseRepository {
   constructor(
@@ -123,8 +122,13 @@ export class BirdhouseSequelizeRepository implements BirdhouseRepository {
     try {
       await birdhouse.save();
     } catch (e) {
-      throw new EntityCreateFailedException({
-        entity: data,
+      if (e instanceof ValidationError) {
+        throw new EntityValidationException({
+          entity: data,
+          error: e as Error,
+        });
+      }
+      throw new RepositoryException({
         error: e as Error,
       });
     }
@@ -134,7 +138,7 @@ export class BirdhouseSequelizeRepository implements BirdhouseRepository {
 
   public async update(
     filters: BirdhouseRepoTypes.UpdateFilter,
-    updatedBirdhouse: Partial<Birdhouse>,
+    data: Partial<Birdhouse>,
   ): Promise<Birdhouse> {
     const birdhouse = await this.birdhouseModel.findOne({
       where: { id: filters.id },
@@ -144,15 +148,24 @@ export class BirdhouseSequelizeRepository implements BirdhouseRepository {
       throw new EntityNotFoundException({ id: filters.id });
     }
 
+    let updatedBirdhouse: BirdhouseModel;
+
     try {
-      const newBirdhouse = await birdhouse.update(updatedBirdhouse);
-      return this.mapper.toEntity(newBirdhouse);
+      updatedBirdhouse = await birdhouse.update(data);
     } catch (e) {
-      throw new EntityUpdateFailedException({
-        id: filters.id,
+      if (e instanceof ValidationError) {
+        throw new EntityValidationException({
+          entity: data,
+          error: e as Error,
+        });
+      }
+      throw new RepositoryException({
         error: e as Error,
+        message: 'Update failed',
       });
     }
+
+    return this.mapper.toEntity(updatedBirdhouse);
   }
 
   public async delete(filter: BirdhouseRepoTypes.DeleteFilter): Promise<void> {
@@ -171,8 +184,7 @@ export class BirdhouseSequelizeRepository implements BirdhouseRepository {
         where: { id: { [Op.in]: ids } },
       });
     } catch (e) {
-      throw new EntityDeleteFailedException({
-        id: filter.id,
+      throw new RepositoryException({
         error: e as Error,
       });
     }

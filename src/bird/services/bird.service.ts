@@ -4,9 +4,8 @@ import {
   ResidencyRepository,
 } from '&/domain/repositories';
 import {
-  EntityCreateFailedException,
   EntityNotFoundException,
-  EntityUpdateFailedException,
+  EntityValidationException,
 } from '&/domain/repositories/exceptions';
 import { LoggerService } from '&/logger/logger.service';
 import { Inject, Injectable } from '@nestjs/common';
@@ -14,8 +13,10 @@ import { v4 as uuid } from 'uuid';
 import { RegisterDto, UpdateHouseDto } from '../dto';
 import { AddResidencyDto } from '../dto/add-residency.dto';
 import {
+  BirdhouseCreateFailedException,
   BirdhouseNotFoundException,
   BirdhouseUpdateFailedException,
+  ResidencyCreateFailedException,
 } from '../exceptions';
 
 @Injectable()
@@ -35,7 +36,7 @@ export class BirdService {
   ): Promise<Birdhouse> | never {
     const ubid = uuid();
 
-    const birdhouse = new Birdhouse(
+    let birdhouse = new Birdhouse(
       undefined,
       ubid,
       registerDto.name,
@@ -45,18 +46,20 @@ export class BirdService {
     );
 
     try {
-      const createdHouse = await this.birdhouseRepo.create(birdhouse);
-      this.logger.log({
-        message: 'Birdhouse created',
-        birdhouse: createdHouse,
-      });
-      return createdHouse;
+      birdhouse = await this.birdhouseRepo.create(birdhouse);
     } catch (e) {
-      if (e instanceof EntityCreateFailedException) {
-        // TODO: Handle this
+      if (e instanceof EntityValidationException) {
+        throw new BirdhouseCreateFailedException();
       }
       throw e;
     }
+
+    this.logger.log({
+      message: 'Birdhouse created',
+      birdhouse: birdhouse,
+    });
+
+    return birdhouse;
   }
 
   public async updateBirdhouse(
@@ -71,7 +74,7 @@ export class BirdService {
       });
       return birdhouse;
     } catch (e) {
-      if (e instanceof EntityUpdateFailedException) {
+      if (e instanceof EntityValidationException) {
         throw new BirdhouseUpdateFailedException(id);
       } else if (e instanceof EntityNotFoundException) {
         throw new BirdhouseNotFoundException(id);
@@ -97,10 +100,11 @@ export class BirdService {
     try {
       residency = await this.residencyRepo.create(residency);
     } catch (e) {
-      if (e instanceof EntityCreateFailedException) {
-        // TODO: Handle error
+      let message: string | undefined;
+      if (e instanceof EntityValidationException) {
+        message = `couldn't add residency ${JSON.stringify(e.entity)}`;
       }
-      throw e;
+      throw new ResidencyCreateFailedException(message);
     }
 
     try {
@@ -109,7 +113,11 @@ export class BirdService {
         { residencyId: residency.id },
       );
     } catch (e) {
-      // TODO: handle this
+      let message: string | undefined;
+      if (e instanceof EntityValidationException) {
+        message = `couldn't add residency ${JSON.stringify(e.entity)}`;
+      }
+      throw new BirdhouseCreateFailedException(message);
     }
 
     birdhouse.residency = residency;

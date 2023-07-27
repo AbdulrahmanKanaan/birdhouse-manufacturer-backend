@@ -1,12 +1,7 @@
 import { BirdhouseModel, ResidencyModel } from '&/core/models';
 import { Birdhouse } from '&/domain/entities';
 import { BirdhouseMapper } from '&/domain/mappers';
-import {
-  EntityCreateFailedException,
-  EntityDeleteFailedException,
-  EntityNotFoundException,
-  EntityUpdateFailedException,
-} from '&/domain/repositories/exceptions';
+import { EntityNotFoundException } from '&/domain/repositories/exceptions';
 import { getModelToken } from '@nestjs/sequelize';
 import { Test, TestingModule } from '@nestjs/testing';
 import { v4 as uuid } from 'uuid';
@@ -23,6 +18,7 @@ const birdhouseData = {
   name: 'name',
   longitude: 123.456,
   latitude: 789.012,
+  residencyId: null,
   createdAt: new Date(),
   updatedAt: new Date(),
   deletedAt: null,

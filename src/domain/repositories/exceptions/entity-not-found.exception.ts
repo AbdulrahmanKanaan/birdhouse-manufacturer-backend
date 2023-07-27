@@ -14,7 +14,7 @@ export class EntityNotFoundException<IDType = any> extends RepositoryException {
     message = `Entity with id ${id} not found`,
     error,
   }: EntityNotFoundExceptionParams<IDType>) {
-    super(message, error);
+    super({ message, error });
     this.id = id;
   }
 }

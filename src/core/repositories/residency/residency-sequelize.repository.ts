@@ -2,9 +2,13 @@ import { ResidencyModel } from '&/core/models';
 import { Residency } from '&/domain/entities';
 import { ResidencyMapper } from '&/domain/mappers';
 import { ResidencyRepoTypes, ResidencyRepository } from '&/domain/repositories';
-import { EntityCreateFailedException } from '&/domain/repositories/exceptions';
+import {
+  EntityValidationException,
+  RepositoryException,
+} from '&/domain/repositories/exceptions';
 import { Inject } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
+import { ValidationError } from 'sequelize';
 
 export class ResidencySequelizeRepository implements ResidencyRepository {
   constructor(
@@ -20,7 +24,13 @@ export class ResidencySequelizeRepository implements ResidencyRepository {
     try {
       await model.save();
     } catch (e) {
-      throw new EntityCreateFailedException({ error: e as Error });
+      if (e instanceof ValidationError) {
+        throw new EntityValidationException({
+          error: e as Error,
+          entity: residency,
+        });
+      }
+      throw new RepositoryException({ error: e as Error });
     }
 
     return this.mapper.toEntity(model);

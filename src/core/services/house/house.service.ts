@@ -7,7 +7,7 @@ import {
   BirdhouseRepository,
   ResidencyRepository,
 } from '&/domain/repositories';
-import { EntityDeleteFailedException } from '&/domain/repositories/exceptions';
+import { RepositoryException } from '&/domain/repositories/exceptions';
 import { Inject, Injectable } from '@nestjs/common';
 
 @Injectable()
@@ -44,7 +44,7 @@ export class HouseService {
         id: outdatedBirdhouses.map((b) => b.id!),
       });
     } catch (e) {
-      if (e instanceof EntityDeleteFailedException) {
+      if (e instanceof RepositoryException) {
         throw new BirdhouseDeleteFailedException(e.message);
       }
     }
