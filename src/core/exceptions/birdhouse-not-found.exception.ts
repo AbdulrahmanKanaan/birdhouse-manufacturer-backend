@@ -1,7 +1,7 @@
 import { NotFoundException } from '@nestjs/common';
 
 export class BirdhouseNotFoundException extends NotFoundException {
-  constructor() {
-    super('Birdhouse not found');
+  constructor(id: string) {
+    super(`Birdhouse with id ${id} not found`);
   }
 }

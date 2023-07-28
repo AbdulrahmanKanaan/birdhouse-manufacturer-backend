@@ -6,9 +6,9 @@ import {
   ResidencyRepository,
 } from '&/domain/repositories';
 import { Inject, Injectable } from '@nestjs/common';
-import { BirdhouseNotFoundException } from '../../bird/exceptions';
 import { ListHistoryDto } from '../dto';
 import { ListHousesDto } from '../dto/list-houses.dto';
+import { BirdhouseNotFoundException } from '&/core/exceptions';
 
 @Injectable()
 export class AdminService {

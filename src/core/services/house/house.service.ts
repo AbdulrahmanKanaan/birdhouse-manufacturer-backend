@@ -1,22 +1,17 @@
+import { Birdhouse } from '&/domain/entities';
+import { BirdhouseRepository } from '&/domain/repositories';
+import { RepositoryException } from '&/domain/repositories/exceptions';
+import { Inject, Injectable } from '@nestjs/common';
 import {
   BirdhouseDeleteFailedException,
   BirdhouseNotFoundException,
-} from '&/bird/exceptions';
-import { Birdhouse } from '&/domain/entities';
-import {
-  BirdhouseRepository,
-  ResidencyRepository,
-} from '&/domain/repositories';
-import { RepositoryException } from '&/domain/repositories/exceptions';
-import { Inject, Injectable } from '@nestjs/common';
+} from '../../exceptions';
 
 @Injectable()
 export class HouseService {
   constructor(
     @Inject(BirdhouseRepository)
     private readonly birdhouseRepo: BirdhouseRepository,
-    @Inject(ResidencyRepository)
-    private readonly residencyRepo: ResidencyRepository,
   ) {}
 
   public async getBirdhouse(id: string): Promise<Birdhouse> | never {

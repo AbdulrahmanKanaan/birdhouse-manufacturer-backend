@@ -14,10 +14,10 @@ import { RegisterDto, UpdateHouseDto } from '../dto';
 import { AddResidencyDto } from '../dto/add-residency.dto';
 import {
   BirdhouseCreateFailedException,
-  BirdhouseNotFoundException,
   BirdhouseUpdateFailedException,
   ResidencyCreateFailedException,
 } from '../exceptions';
+import { BirdhouseNotFoundException } from '&/core/exceptions';
 
 @Injectable()
 export class BirdService {
