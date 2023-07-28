@@ -113,11 +113,7 @@ export class BirdService {
         { residencyId: residency.id },
       );
     } catch (e) {
-      let message: string | undefined;
-      if (e instanceof EntityValidationException) {
-        message = `couldn't add residency ${JSON.stringify(e.entity)}`;
-      }
-      throw new BirdhouseCreateFailedException(message);
+      throw new BirdhouseUpdateFailedException(birdhouse.id!);
     }
 
     birdhouse.residency = residency;
