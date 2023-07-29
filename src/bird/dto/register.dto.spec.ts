@@ -1,7 +1,7 @@
 import { validate } from 'class-validator';
 import { RegisterDto } from './register.dto';
 
-describe.only('RegisterDto', () => {
+describe('RegisterDto', () => {
   it('should be a valid dto', async () => {
     const dto = new RegisterDto();
     dto.name = 'abcd';
