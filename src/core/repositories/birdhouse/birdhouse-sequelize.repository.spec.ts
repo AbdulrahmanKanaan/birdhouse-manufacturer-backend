@@ -348,4 +348,39 @@ describe('BirdhouseSequelizeRepository', () => {
       );
     });
   });
+
+  describe('getOutdatedBirdhouses', () => {
+    it('should return an array of outdated birdhouses', async () => {
+      const date = new Date();
+
+      jest
+        .spyOn(birdhouseModel, 'findAll')
+        .mockResolvedValueOnce([birdhouseModelInstance]);
+
+      const result = await repo.getOutdatedBirdhouses(date);
+
+      expect(birdhouseModel.findAll).toHaveBeenCalled();
+      expect(birdhouseModel.findAll).toHaveBeenCalledWith({
+        where: {
+          updatedAt: {
+            [Op.lt]: date,
+          },
+        },
+        include: [
+          {
+            model: residencyModel,
+            as: 'residency',
+            where: {
+              createdAt: {
+                [Op.lt]: date,
+              },
+            },
+          },
+        ],
+      });
+
+      expect(result).toHaveLength(1);
+      expect(result[0]).toBeInstanceOf(Birdhouse);
+    });
+  });
 });
