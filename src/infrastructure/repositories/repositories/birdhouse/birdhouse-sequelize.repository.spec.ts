@@ -1,4 +1,4 @@
-import { BirdhouseModel, ResidencyModel } from '&/core/models';
+import { BirdhouseModel, ResidencyModel } from '&/infrastructure/repositories/models';
 import { Birdhouse } from '&/domain/entities';
 import { BirdhouseMapper } from '&/domain/mappers';
 import {

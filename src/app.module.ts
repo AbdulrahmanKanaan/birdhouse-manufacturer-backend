@@ -5,7 +5,8 @@ import { AdminModule } from './admin/admin.module';
 import { getSequelizeConfig } from './common/config/sequelize.config';
 import { CoreModule } from './core/core.module';
 import { BirdModule } from './bird/bird.module';
-import { LoggerModule } from './logger/logger.module';
+import { LoggerModule } from './infrastructure/logger/logger.module';
+import { RepositoriesModule } from './infrastructure/repositories/repositories.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { LoggerModule } from './logger/logger.module';
     AdminModule,
     BirdModule,
     LoggerModule,
+    RepositoriesModule,
   ],
 })
 export class AppModule {}

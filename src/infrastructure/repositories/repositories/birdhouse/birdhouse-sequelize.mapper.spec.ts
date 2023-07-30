@@ -1,7 +1,7 @@
 import { v4 as uuid } from 'uuid';
 import { BirdhouseSequelizeMapper } from './birdhouse-sequelize.mapper';
 import { Birdhouse, Residency } from '&/domain/entities';
-import { BirdhouseModel } from '&/core/models';
+import { BirdhouseModel } from '&/infrastructure/repositories/models';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getModelToken } from '@nestjs/sequelize';
 import { ResidencyMapper } from '&/domain/mappers';

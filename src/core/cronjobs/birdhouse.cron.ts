@@ -1,5 +1,5 @@
 import { RepositoryException } from '&/domain/repositories/exceptions';
-import { LoggerService } from '&/logger/logger.service';
+import { LoggerService } from '&/infrastructure/logger/logger.service';
 import { Injectable } from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
 import { HouseService } from '../services';

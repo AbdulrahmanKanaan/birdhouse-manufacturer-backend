@@ -1,4 +1,4 @@
-import { ResidencyModel } from '&/core/models';
+import { ResidencyModel } from '&/infrastructure/repositories/models';
 import { Residency } from '&/domain/entities';
 import { ResidencyMapper } from '&/domain/mappers';
 import { getModelToken } from '@nestjs/sequelize';

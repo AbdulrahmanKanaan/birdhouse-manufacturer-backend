@@ -1,4 +1,4 @@
-import { ResidencyModel } from '&/core/models';
+import { ResidencyModel } from '&/infrastructure/repositories/models';
 import { Birdhouse, Residency } from '&/domain/entities';
 import { BirdhouseMapper } from '&/domain/mappers';
 import { getModelToken } from '@nestjs/sequelize';

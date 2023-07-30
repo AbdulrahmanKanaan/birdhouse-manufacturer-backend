@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { BirdhouseCron } from './birdhouse.cron';
 import { HouseService } from '../services';
-import { LoggerService } from '&/logger/logger.service';
+import { LoggerService } from '&/infrastructure/logger/logger.service';
 import { RepositoryException } from '&/domain/repositories/exceptions';
 
 describe('BirdhouseCron', () => {
