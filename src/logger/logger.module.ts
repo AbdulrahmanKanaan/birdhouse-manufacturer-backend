@@ -2,13 +2,7 @@ import { Module } from '@nestjs/common';
 import { WinstonModule } from 'nest-winston';
 import * as winston from 'winston';
 import { LoggerService } from './logger.service';
-
-const onlyBirdActions = winston.format((info) => {
-  if (info.context !== 'BIRD ACTION') {
-    return false;
-  }
-  return info;
-});
+import { onlyBirdActions } from './logger.filter';
 
 @Module({
   providers: [LoggerService],
