@@ -46,15 +46,57 @@ Regarding the structure there is a well known architecture that embraces the [(S
 
 ![Clean Architecture](images/CleanArchitecture.jpg)
 
-but you know **the clean architecture** is a little bit overkill for our project and there is also [(KISS)](https://en.wikipedia.org/wiki/KISS_principle) which forces me to keep the stuff simple; so I decided to take part of it only.
+but you know using **the clean architecture** with all of its concepts is a little bit overkill for our small project and there is also [(KISS)](https://en.wikipedia.org/wiki/KISS_principle) which forces me to keep the stuff simple
+
+so in order to keep stuff simple I decided to take part of its main concepts (such as layered architecture, SOLID principles, dependency rule, testing, ...etc)
+
+on the other hand NestJS helps with implementing the layered architecture due to its modular structure, and that led to having the following layers:
+
+- Domain
+- Application
+- Infrastructure
+
+> in this order `infrastructure` → `application` → `domain`
+
+by implementing the layered architecture we're following the *Dependency Inversion* principle *D in SOLID*
 
 #### Domain Layer
 
-the main purpose of this layer is to define how the entities are related to each others and how can we fetch and store them from and to the data source
+> represented by `domain` folder
 
-it also helps us with drawing a boundary line between us & the data source, in this way we are not depending on any type of databases, this pattern is called **Repository Pattern**
+the main purpose of this layer is to define our entities and how they're related to each others and how services & gateways communicate using those entities
 
-#### Repository Pattern
+it also helps us with drawing a boundary line between our domain and the data sources, in this way we are not depending on any type of databases, this pattern is called **Repository Pattern**
+
+In summary this layer should only contain the data model & repository interfaces & external services interfaces
+
+#### Application
+
+> Represented by `core` & `admin` & `bird` modules
+
+to keep stuff simple as discussed before I decided to handle the business logic inside the normal services we all know
+
+In general, we are making some CRUD operations on the birdhouses, so we thought of some way to reduce code repetition to follow the [(DRY)](https://en.wikipedia.org/wiki/Don%27t_repeat_yourself) principle
+
+we found out that we can separate this layer into 3 main modules
+
+- Core
+- BIRD
+- Admin
+
+in the `Core` module we will have the shared logic between `Admin` and `BIRD` and export it to the other two modules while consuming the `domain` & `infrastructure` layers, and we will handle the differences in the other two modules while consuming exported things from `Core`
+
+in those module we'll find **controllers**, **cronjobs** and other services that triggers our business logic
+
+we can also see that there is another folder in the project `common` which contains some common things that can be used across every NestJS project
+
+#### Infrastructure
+
+> represented by `repositories` & `logger` modules
+
+the purpose of this layer is to provide the implementation of the external services and repositories defined by the domain layer
+
+##### Repository Pattern
 
 **Why repository pattern?**
 
@@ -63,22 +105,15 @@ it also helps us with drawing a boundary line between us & the data source, in t
 - when using this pattern your code will stay independent from ORMs, let's say some ORM library just got deprecated suddenly, you can simply change the binding to a different implementation and you're ready to go without even touching your services
 - Changes in the database doesn't necessarily need changes in our domain data model, because the data will always be mapped from data source to our entities (e.g. we wanted to move part of the data to a separate table, ORM model will be changed, but domain entities will stay the same)
 
-#### Our Business Logic
+##### Logger
 
-to keep stuff simple as discussed before I decided to make the normal services we all know
+As we saw in the use cases there is a logging part
 
-### Modules
+to keep our code clean, reusable and responsible for one single thing *(S in solid)* I decided to create a separate module for it where you can implement whatever you want in this module (in my case I used winston) then export one single service `LoggerService`
 
-In general, we are making some CRUD operations on the birdhouses, so we thought of some way to reduce code repetition to follow the [(DRY)](https://en.wikipedia.org/wiki/Don%27t_repeat_yourself) principle
+in this way the other modules doesn't really care about what's happening inside this module, it only cares about one thing
+> there is some stuff to log
 
-we found out that we can separate the project into 3 main modules
+### Project Modules & Folders
 
-- Core
-- BIRD
-- Admin
-
-in the **Core** module we will have the shared logic between **Admin** and **BIRD** and export it to the other two modules, it will also contain the implementation of the repositories, and we will handle the differences in the other two modules while consuming exported things from **Core**
-
-we also have additional things such as **Logging** so we created a standalone module for it
-
-we can also see that there are two other folders in the project **domain** & **common**, we will discuss them in details later
+after discussing the main structure, in this section I'll add some notes about some modules
