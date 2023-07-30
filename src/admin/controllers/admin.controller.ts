@@ -3,7 +3,6 @@ import { Page } from '&/common/types';
 import { HouseService } from '&/core/services';
 import { Birdhouse, Residency } from '&/domain/entities';
 import {
-  Body,
   Controller,
   Get,
   HttpCode,
@@ -11,6 +10,8 @@ import {
   Param,
   Query,
 } from '@nestjs/common';
+import { ApiNotFoundResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { ListHistoryDto } from '../dto';
 import { ListHousesDto } from '../dto/list-houses.dto';
 import {
   GetHistoryPresenter,
@@ -19,6 +20,7 @@ import {
 } from '../presenter';
 import { AdminService } from '../services';
 
+@ApiTags('Admin')
 @Controller('admin/houses')
 export class AdminController {
   constructor(
@@ -28,6 +30,7 @@ export class AdminController {
 
   @Get('/')
   @UsePresenter(ListHousesPresenter)
+  @ApiOkResponse()
   async listHouses(
     @Query() listHousesDto: ListHousesDto,
   ): Promise<Page<Birdhouse>> {
@@ -37,6 +40,8 @@ export class AdminController {
   @Get(':id')
   @HttpCode(HttpStatus.OK)
   @UsePresenter(HousePresenter)
+  @ApiOkResponse()
+  @ApiNotFoundResponse()
   public async getBirdhouse(@Param('id') id: string): Promise<Birdhouse> {
     return await this.houseService.getBirdhouse(id);
   }
@@ -44,9 +49,11 @@ export class AdminController {
   @Get(':id/history')
   @HttpCode(HttpStatus.OK)
   @UsePresenter(GetHistoryPresenter)
+  @ApiOkResponse()
+  @ApiNotFoundResponse()
   public async getHistory(
     @Param('id') id: string,
-    @Query() listHistoryDto: ListHousesDto,
+    @Query() listHistoryDto: ListHistoryDto,
   ): Promise<Page<Residency>> {
     return await this.adminService.getHistory(id, listHistoryDto);
   }

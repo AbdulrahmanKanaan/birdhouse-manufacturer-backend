@@ -1,14 +1,20 @@
 import { Birdhouse } from '&/domain/entities';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class BirdhousePresenter {
+  @ApiProperty()
   name: string;
 
+  @ApiProperty()
   longitude: number;
 
+  @ApiProperty()
   latitude: number;
 
+  @ApiProperty()
   birds: number;
 
+  @ApiProperty()
   eggs: number;
 
   constructor(birdhouse: Birdhouse) {

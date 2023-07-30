@@ -1,4 +1,5 @@
 import { UsePresenter } from '&/common/decorators';
+import { HouseService } from '&/core/services';
 import { Birdhouse } from '&/domain/entities';
 import {
   Body,
@@ -11,14 +12,24 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
+import {
+  ApiBadRequestResponse,
+  ApiCreatedResponse,
+  ApiInternalServerErrorResponse,
+  ApiNotFoundResponse,
+  ApiTags,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
 import { AuthGuard, CanManipulateGuard } from '../auth';
 import { RegisterDto } from '../dto';
 import { AddResidencyDto } from '../dto/add-residency.dto';
 import { UpdateHouseDto } from '../dto/update-house.dto';
 import { BirdhousePresenter, RegisterPresenter } from '../presenter';
 import { BirdService } from '../services';
-import { HouseService as HouseService } from '&/core/services';
+import { ApiUbidAuth } from './decorators/api-ubid-auth.decorator';
 
+@ApiTags('BIRD')
+@ApiUnauthorizedResponse()
 @Controller('house')
 export class BirdController {
   constructor(
@@ -27,6 +38,9 @@ export class BirdController {
   ) {}
 
   @Post('/')
+  @ApiCreatedResponse()
+  @ApiBadRequestResponse()
+  @ApiInternalServerErrorResponse()
   @HttpCode(HttpStatus.CREATED)
   @UsePresenter(RegisterPresenter)
   public async createBirdhouse(
@@ -36,6 +50,9 @@ export class BirdController {
   }
 
   @Get(':id')
+  @ApiUbidAuth()
+  @ApiCreatedResponse()
+  @ApiNotFoundResponse()
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard, CanManipulateGuard)
   @UsePresenter(BirdhousePresenter)
@@ -44,6 +61,11 @@ export class BirdController {
   }
 
   @Patch(':id')
+  @ApiUbidAuth()
+  @ApiCreatedResponse()
+  @ApiBadRequestResponse()
+  @ApiNotFoundResponse()
+  @ApiInternalServerErrorResponse()
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard, CanManipulateGuard)
   @UsePresenter(BirdhousePresenter)
@@ -55,6 +77,10 @@ export class BirdController {
   }
 
   @Post(':id/residency')
+  @ApiUbidAuth()
+  @ApiCreatedResponse()
+  @ApiNotFoundResponse()
+  @ApiInternalServerErrorResponse()
   @HttpCode(HttpStatus.CREATED)
   @UseGuards(AuthGuard, CanManipulateGuard)
   @UsePresenter(BirdhousePresenter)

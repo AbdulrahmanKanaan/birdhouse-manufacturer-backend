@@ -1,35 +1,29 @@
 import { Page } from '&/common/types';
 import { Residency } from '&/domain/entities';
+import { ApiProperty } from '@nestjs/swagger';
+import { ResidencyPresenter } from './residency.presenter';
 
 export class GetHistoryPresenter {
-  data: Partial<{
-    birds: number;
-    eggs: number;
-    date: string;
-  }>[];
+  @ApiProperty({
+    type: [ResidencyPresenter],
+    description: 'array of residencies',
+  })
+  data: ResidencyPresenter[];
 
+  @ApiProperty({ description: 'number of all residencies in the database' })
   total: number;
 
+  @ApiProperty({ description: 'requested page number' })
   page: number;
 
+  @ApiProperty({ description: 'requested items per page' })
   perPage: number;
 
+  @ApiProperty({ description: 'number of available pages' })
   pageCount: number;
 
   constructor(page: Page<Residency>) {
-    const formatter = new Intl.DateTimeFormat('en-GB', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: 'numeric',
-      minute: 'numeric',
-    });
-
-    this.data = page.data.map((residency) => ({
-      birds: residency.birds,
-      eggs: residency.eggs,
-      date: formatter.format(residency.createdAt),
-    }));
+    this.data = page.data.map((residency) => new ResidencyPresenter(residency));
     this.perPage = page.perPage;
     this.page = page.page;
     this.total = page.total;
