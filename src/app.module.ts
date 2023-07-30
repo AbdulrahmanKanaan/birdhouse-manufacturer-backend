@@ -7,6 +7,7 @@ import { CoreModule } from './core/core.module';
 import { BirdModule } from './bird/bird.module';
 import { LoggerModule } from './infrastructure/logger/logger.module';
 import { RepositoriesModule } from './infrastructure/repositories/repositories.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { RepositoriesModule } from './infrastructure/repositories/repositories.m
       inject: [ConfigService],
       useFactory: getSequelizeConfig,
     }),
+    ScheduleModule.forRoot(),
     CoreModule,
     AdminModule,
     BirdModule,

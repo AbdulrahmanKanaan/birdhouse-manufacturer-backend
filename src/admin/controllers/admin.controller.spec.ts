@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AdminController } from './admin.controller';
 import { AdminService } from '../services';
 import { HouseService } from '&/core/services';
-import { v4 } from 'uuid';
+import { v4 as uuid } from 'uuid';
 import { Birdhouse, Residency } from '&/domain/entities';
 import { Page } from '&/common/types';
 import { ListHousesDto } from '../dto';
@@ -38,7 +38,14 @@ describe('AdminController', () => {
 
   describe('listHouses', () => {
     it('should return a page of birdhouses', async () => {
-      const birdhouse = new Birdhouse(v4(), v4(), 'test', 12.34, 56.78, null);
+      const birdhouse = new Birdhouse(
+        uuid(),
+        uuid(),
+        'test',
+        12.34,
+        56.78,
+        null,
+      );
 
       const dto: ListHousesDto = {
         page: 1,
@@ -59,7 +66,14 @@ describe('AdminController', () => {
 
   describe('getBirdhouse', () => {
     it('should return a birdhouse', async () => {
-      const birdhouse = new Birdhouse(v4(), v4(), 'test', 12.34, 56.78, null);
+      const birdhouse = new Birdhouse(
+        uuid(),
+        uuid(),
+        'test',
+        12.34,
+        56.78,
+        null,
+      );
 
       jest.spyOn(houseService, 'getBirdhouse').mockResolvedValue(birdhouse);
 
@@ -73,7 +87,14 @@ describe('AdminController', () => {
 
   describe('getHistory', () => {
     it('should return a page of residencies', async () => {
-      const birdhouse = new Birdhouse(v4(), v4(), 'test', 12.34, 56.78, null);
+      const birdhouse = new Birdhouse(
+        uuid(),
+        uuid(),
+        'test',
+        12.34,
+        56.78,
+        null,
+      );
       const residency = new Residency(1, birdhouse.id!, 2, 3);
 
       const dto: ListHousesDto = {

@@ -1,7 +1,7 @@
 import { HouseService } from '&/core/services';
 import { Birdhouse } from '&/domain/entities';
 import { Test, TestingModule } from '@nestjs/testing';
-import { v4 } from 'uuid';
+import { v4 as uuid } from 'uuid';
 import { AuthGuard } from '../auth';
 import { RegisterDto, UpdateHouseDto } from '../dto';
 import { AddResidencyDto } from '../dto/add-residency.dto';
@@ -49,7 +49,14 @@ describe('BirdController', () => {
         latitude: 37.7749,
         longitude: -122.4194,
       };
-      const birdhouse = new Birdhouse(v4(), v4(), 'test', 12.34, 56.78, null);
+      const birdhouse = new Birdhouse(
+        uuid(),
+        uuid(),
+        'test',
+        12.34,
+        56.78,
+        null,
+      );
       jest
         .spyOn(birdService, 'createBirdhouse')
         .mockResolvedValueOnce(birdhouse);
@@ -65,7 +72,14 @@ describe('BirdController', () => {
 
   describe('getBirdhouse', () => {
     it('should get a birdhouse by id and return it', async () => {
-      const birdhouse = new Birdhouse(v4(), v4(), 'test', 12.34, 56.78, null);
+      const birdhouse = new Birdhouse(
+        uuid(),
+        uuid(),
+        'test',
+        12.34,
+        56.78,
+        null,
+      );
 
       jest.spyOn(houseService, 'getBirdhouse').mockResolvedValueOnce(birdhouse);
 
@@ -85,7 +99,14 @@ describe('BirdController', () => {
         latitude: 37.7749,
         longitude: -122.4194,
       };
-      const birdhouse = new Birdhouse(v4(), v4(), 'test', 12.34, 56.78, null);
+      const birdhouse = new Birdhouse(
+        uuid(),
+        uuid(),
+        'test',
+        12.34,
+        56.78,
+        null,
+      );
 
       jest
         .spyOn(birdService, 'updateBirdhouse')
@@ -112,7 +133,14 @@ describe('BirdController', () => {
         eggs: 1,
         birds: 2,
       };
-      const birdhouse = new Birdhouse(v4(), v4(), 'test', 12.34, 56.78, null);
+      const birdhouse = new Birdhouse(
+        uuid(),
+        uuid(),
+        'test',
+        12.34,
+        56.78,
+        null,
+      );
 
       jest.spyOn(birdService, 'addResidency').mockResolvedValueOnce(birdhouse);
 

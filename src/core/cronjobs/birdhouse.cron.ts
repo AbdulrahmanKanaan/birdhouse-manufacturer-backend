@@ -1,7 +1,7 @@
 import { RepositoryException } from '&/domain/repositories/exceptions';
 import { LoggerService } from '&/domain/services';
 import { Inject, Injectable } from '@nestjs/common';
-import { Cron } from '@nestjs/schedule';
+import { Cron, CronExpression } from '@nestjs/schedule';
 import { HouseService } from '../services';
 
 @Injectable()
@@ -12,7 +12,7 @@ export class BirdhouseCron {
     private readonly logger: LoggerService,
   ) {}
 
-  @Cron('0 0 * * *') // Cronjob that runs every day at midnight
+  @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
   async destroyOutdatedBirdhouses() {
     try {
       await this.houseService.destroyOutdatedBirdhouses();

@@ -1,4 +1,3 @@
-import { Birdhouse } from '&/domain/entities';
 import { v4 as uuid } from 'uuid';
 import { UnauthorizedException } from '../exceptions';
 import { CanManipulateGuard } from './can-manipulate.guard';

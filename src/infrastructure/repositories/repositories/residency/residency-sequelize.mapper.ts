@@ -1,4 +1,7 @@
-import { BirdhouseModel, ResidencyModel } from '&/infrastructure/repositories/models';
+import {
+  BirdhouseModel,
+  ResidencyModel,
+} from '&/infrastructure/repositories/models';
 import { Residency } from '&/domain/entities';
 import { BirdhouseMapper, ResidencyMapper } from '&/domain/mappers';
 import { Inject, forwardRef } from '@nestjs/common';

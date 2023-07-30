@@ -1,0 +1,86 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
+
+const birdhouses = require('./birdhouses.js');
+
+module.exports = [
+  {
+    id: 1,
+    birds: 2,
+    eggs: 4,
+    birdhouseId: birdhouses[0].id,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  {
+    id: 2,
+    birds: 5,
+    eggs: 10,
+    birdhouseId: birdhouses[0].id,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  {
+    id: 3,
+    birds: 3,
+    eggs: 6,
+    birdhouseId: birdhouses[0].id,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  {
+    id: 4,
+    birds: 4,
+    eggs: 8,
+    birdhouseId: birdhouses[0].id,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  {
+    id: 5,
+    birds: 1,
+    eggs: 2,
+    birdhouseId: birdhouses[1].id,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  {
+    id: 6,
+    birds: 6,
+    eggs: 12,
+    birdhouseId: birdhouses[1].id,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  {
+    id: 7,
+    birds: 2,
+    eggs: 4,
+    birdhouseId: birdhouses[1].id,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  {
+    id: 8,
+    birds: 4,
+    eggs: 8,
+    birdhouseId: birdhouses[2].id,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  {
+    id: 9,
+    birds: 3,
+    eggs: 6,
+    birdhouseId: birdhouses[2].id,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  {
+    id: 10,
+    birds: 2,
+    eggs: 4,
+    birdhouseId: birdhouses[2].id,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+];
