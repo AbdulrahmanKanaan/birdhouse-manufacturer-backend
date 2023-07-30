@@ -12,6 +12,9 @@ export class PresenterInterceptor<T, R extends new (...args: any[]) => any>
 {
   constructor(private readonly Presenter: R) {}
 
+  /**
+   * Intercepts the response and wraps it in the presenter
+   */
   intercept(
     context: ExecutionContext,
     next: CallHandler,

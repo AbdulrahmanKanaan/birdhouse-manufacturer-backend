@@ -11,23 +11,23 @@ import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 export class LoggerService extends ConsoleLogger implements BaseLoggerService {
   constructor(
     @Inject(WINSTON_MODULE_NEST_PROVIDER)
-    private readonly logger: BaseLoggerService,
+    private readonly winstonLogger: BaseLoggerService,
   ) {
     super();
   }
 
   log(message: any, context?: string) {
     super.log(message, context);
-    this.logger.log(message, context || this.context);
+    this.winstonLogger.log(message, context || this.context);
   }
 
   error(message: any, stack?: string, context?: string) {
     super.error(message, stack, context);
-    this.logger.error(message, stack, context || this.context);
+    this.winstonLogger.error(message, stack, context || this.context);
   }
 
   warn(message: any, context?: string) {
     super.warn(message, context);
-    this.logger.warn(message, context || this.context);
+    this.winstonLogger.warn(message, context || this.context);
   }
 }

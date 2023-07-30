@@ -1,4 +1,8 @@
-export abstract class Entity<IDType = any> {
+/**
+ * Base entity class that all other entities should extend.
+ * @template IDType - Type of the entity's id.
+ */
+export abstract class Entity<IDType = number> {
   id?: IDType;
   createdAt?: Date;
   updatedAt?: Date;

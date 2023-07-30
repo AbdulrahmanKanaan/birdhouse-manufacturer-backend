@@ -1,7 +1,10 @@
+import {
+  LoggerService as BaseLoggerService,
+  ConsoleLogger,
+} from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LoggerService } from './logger.service';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
-import { LoggerService as BaseLoggerService } from '@nestjs/common';
+import { LoggerService } from './logger.service';
 
 describe('LoggerService', () => {
   let service: LoggerService;
@@ -23,7 +26,7 @@ describe('LoggerService', () => {
     }).compile();
 
     service = await module.resolve<LoggerService>(LoggerService);
-    winstonMock = await module.resolve<BaseLoggerService>(
+    winstonMock = await module.get<BaseLoggerService>(
       WINSTON_MODULE_NEST_PROVIDER,
     );
   });
@@ -37,9 +40,17 @@ describe('LoggerService', () => {
       const mockMessage = 'test message';
       const mockContext = 'test context';
 
+      jest
+        .spyOn(ConsoleLogger.prototype, 'log')
+        .mockImplementationOnce(() => undefined);
+
       service.log(mockMessage, mockContext);
 
       expect(winstonMock.log).toHaveBeenCalledWith(mockMessage, mockContext);
+      expect(ConsoleLogger.prototype.log).toHaveBeenCalledWith(
+        mockMessage,
+        mockContext,
+      );
     });
   });
 
@@ -49,9 +60,19 @@ describe('LoggerService', () => {
       const mockStack = 'test stack';
       const mockContext = 'test context';
 
+      jest
+        .spyOn(ConsoleLogger.prototype, 'error')
+        .mockImplementationOnce(() => undefined);
+
       service.error(mockMessage, mockStack, mockContext);
 
       expect(winstonMock.error).toHaveBeenCalledWith(
+        mockMessage,
+        mockStack,
+        mockContext,
+      );
+
+      expect(ConsoleLogger.prototype.error).toHaveBeenCalledWith(
         mockMessage,
         mockStack,
         mockContext,
@@ -64,9 +85,17 @@ describe('LoggerService', () => {
       const mockMessage = 'test message';
       const mockContext = 'test context';
 
+      jest
+        .spyOn(ConsoleLogger.prototype, 'warn')
+        .mockImplementationOnce(() => undefined);
+
       service.warn(mockMessage, mockContext);
 
       expect(winstonMock.warn).toHaveBeenCalledWith(mockMessage, mockContext);
+      expect(ConsoleLogger.prototype.warn).toHaveBeenCalledWith(
+        mockMessage,
+        mockContext,
+      );
     });
   });
 });

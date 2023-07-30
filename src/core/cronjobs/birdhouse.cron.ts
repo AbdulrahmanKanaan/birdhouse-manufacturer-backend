@@ -11,7 +11,7 @@ export class BirdhouseCron {
     private readonly logger: LoggerService,
   ) {}
 
-  @Cron('0 0 * * *')
+  @Cron('0 0 * * *') // Cronjob that runs every day at midnight
   async destroyOutdatedBirdhouses() {
     try {
       await this.houseService.destroyOutdatedBirdhouses();
