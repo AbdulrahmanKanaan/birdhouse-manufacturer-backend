@@ -36,7 +36,7 @@ Basically we have two entities that represents our data model
 
 and from the requirements file we can infer this small ERD
 
-![ERD](images/ERD.png)
+![ERD](docs/ERD.png)
 
 well this is all we got regarding the data model
 
@@ -44,7 +44,7 @@ well this is all we got regarding the data model
 
 Regarding the structure there is a well known architecture that embraces the [(SOLID)](https://en.wikipedia.org/wiki/SOLID) principles called [The Clean Architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)
 
-![Clean Architecture](images/CleanArchitecture.jpg)
+![Clean Architecture](docs/CleanArchitecture.jpg)
 
 but you know using **the clean architecture** with all of its concepts is a little bit overkill for our small project and there is also [(KISS)](https://en.wikipedia.org/wiki/KISS_principle) which forces me to keep the stuff simple
 
@@ -86,9 +86,7 @@ we found out that we can separate this layer into 3 main modules
 
 in the `Core` module we will have the shared logic between `Admin` and `BIRD` and export it to the other two modules while consuming the `domain` & `infrastructure` layers, and we will handle the differences in the other two modules while consuming exported things from `Core`
 
-in those module we'll find **controllers**, **cronjobs** and other services that triggers our business logic
-
-we can also see that there is another folder in the project `common` which contains some common things that can be used across every NestJS project
+in those module we'll find **controllers**, **cronjobs** and other services that triggers our business logic alongside with our **services** that provides our business logic
 
 #### Infrastructure
 
@@ -116,4 +114,78 @@ in this way the other modules doesn't really care about what's happening inside 
 
 ### Project Modules & Folders
 
-after discussing the main structure, in this section I'll add some notes about some modules
+after discussing the main structure,
+in this section I'll add some notes about some modules and dive deeper in some of the implementations
+
+#### Logger Module
+
+this module is responsible for providing the implementation of the logger service from the domain layer
+
+we decided to use **Winston** which is a library that helps with logging stuff
+
+we have two types of logs:
+
+- general logs
+  - the general log contains everything happening in the application including NestJS logs (when booting the app, ...etc)
+- bird action
+  - this log contains actions made on birdhouses, it will log only if birdhouses or residencies are mutated
+
+we have two channels for logging:
+
+- file
+  - general logs → logs.log file
+  - bird actions → actions.log
+- console
+
+**how do we trigger the log method?**
+
+back then when I was structuring the project, I thought of two ways to implement logging
+
+1. Event/Listener pattern (similar to observer pattern)
+   - in this pattern we simply create some events observed by the listeners
+   there is also some ready to use events triggered by database actions
+   let's say we have an event `birdhouse updated`, we attach a listener to it that is responsible for logging
+   once the event is triggered it triggers all the listeners attached to it
+2. Injecting the LoggerService into the business logic services
+   - we can use the logger service when necessary while implementing our business logic
+
+I decided to go with the second approach to keep it simple
+
+#### Common
+
+this folder contains some common things that can be used across the whole project
+
+```shell
+src/common/
+├── config
+│   └── sequelize.config.ts
+├── decorators
+│   ├── index.ts
+│   └── use-presenter.decorator.ts
+├── dto
+│   ├── index.ts
+│   └── paginated.dto.ts
+├── interceptors
+│   ├── index.ts
+│   └── presenter.interceptor.ts
+├── types
+│   ├── index.ts
+│   └── page.ts
+└── utils
+    └── pagination.ts
+```
+
+- config:
+  - sequelize.config: contains configuration for Sequelize ORM & Database connection info
+- decorators
+  - use-presenter.decorator: a helper decorator that combines multiple decorators
+    1. presenter interceptor: uses interceptor decorator to use the passed presenter class
+    2. api response: in order to add the response schema to swagger open api docs
+- dto: some shared DTOs
+  - paginated.dto
+    - this DTO contains the required properties for pagination (page, perPage)
+    - other DTOs can extends this DTO in order to create a paginated DTO
+- interceptors:
+  - presenter.interceptor: interceptor used to intercept response returned from controller and map it to some presenter
+- types:
+  - page: page type is a helper class that contains paginated data & it make some calculations
