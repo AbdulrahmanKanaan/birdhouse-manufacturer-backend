@@ -7,7 +7,7 @@ import {
   EntityNotFoundException,
   EntityValidationException,
 } from '&/domain/repositories/exceptions';
-import { LoggerService } from '&/infrastructure/logger/logger.service';
+import { LoggerService } from '&/domain/services';
 import { Inject, Injectable } from '@nestjs/common';
 import { v4 as uuid } from 'uuid';
 import { RegisterDto, UpdateHouseDto } from '../dto';
@@ -26,6 +26,7 @@ export class BirdService {
     private readonly birdhouseRepo: BirdhouseRepository,
     @Inject(ResidencyRepository)
     private readonly residencyRepo: ResidencyRepository,
+    @Inject(LoggerService)
     private readonly logger: LoggerService,
   ) {
     this.logger.setContext('BIRD ACTION');

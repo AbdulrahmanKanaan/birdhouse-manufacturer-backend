@@ -1,2 +1,2 @@
-export * from './birdhouse.repository';
-export * from './residency.repository';
+export * from './birdhouse.repository.interface';
+export * from './residency.repository.interface';

@@ -1,17 +1,21 @@
+import { LoggerService as BaseLoggerService } from '&/domain/services';
 import {
   ConsoleLogger,
   Injectable,
-  LoggerService as BaseLoggerService,
+  LoggerService as NestLoggerService,
   Scope,
   Inject,
 } from '@nestjs/common';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 
 @Injectable({ scope: Scope.TRANSIENT })
-export class LoggerService extends ConsoleLogger implements BaseLoggerService {
+export class LoggerService
+  extends ConsoleLogger
+  implements NestLoggerService, BaseLoggerService
+{
   constructor(
     @Inject(WINSTON_MODULE_NEST_PROVIDER)
-    private readonly winstonLogger: BaseLoggerService,
+    private readonly winstonLogger: NestLoggerService,
   ) {
     super();
   }

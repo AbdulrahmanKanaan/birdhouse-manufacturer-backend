@@ -8,9 +8,8 @@ import {
   EntityNotFoundException,
   EntityValidationException,
 } from '&/domain/repositories/exceptions';
-import { LoggerService } from '&/infrastructure/logger/logger.service';
+import { LoggerService } from '&/domain/services';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ValidationError } from 'sequelize';
 import { v4 as uuid } from 'uuid';
 import {
   BirdhouseCreateFailedException,

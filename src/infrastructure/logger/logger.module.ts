@@ -2,10 +2,11 @@ import { Module } from '@nestjs/common';
 import { WinstonModule } from 'nest-winston';
 import * as winston from 'winston';
 import { LoggerService } from './logger.service';
+import { LoggerService as BaseLoggerService } from '&/domain/services';
 import { onlyBirdActions } from './logger.filter';
 
 @Module({
-  providers: [LoggerService],
+  providers: [{ provide: BaseLoggerService, useClass: LoggerService }],
   imports: [
     WinstonModule.forRoot({
       format: winston.format.combine(
@@ -26,6 +27,6 @@ import { onlyBirdActions } from './logger.filter';
       ],
     }),
   ],
-  exports: [LoggerService],
+  exports: [{ provide: BaseLoggerService, useClass: LoggerService }],
 })
 export class LoggerModule {}

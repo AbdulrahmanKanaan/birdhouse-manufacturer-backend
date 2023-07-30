@@ -1,6 +1,6 @@
 import { RepositoryException } from '&/domain/repositories/exceptions';
-import { LoggerService } from '&/infrastructure/logger/logger.service';
-import { Injectable } from '@nestjs/common';
+import { LoggerService } from '&/domain/services';
+import { Inject, Injectable } from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
 import { HouseService } from '../services';
 
@@ -8,6 +8,7 @@ import { HouseService } from '../services';
 export class BirdhouseCron {
   constructor(
     private readonly houseService: HouseService,
+    @Inject(LoggerService)
     private readonly logger: LoggerService,
   ) {}
 
