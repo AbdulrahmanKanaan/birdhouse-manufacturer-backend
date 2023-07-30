@@ -1,5 +1,38 @@
 # Birdhouse Manufacturer Backend
 
+## Installation
+
+Clone the repository
+
+```shell
+git clone https://github.com/AbdulrahmanKanaan/birdhouse-manufacturer-backend.git
+```
+
+Install the dependencies:
+
+```shell
+cd birdhouse-manufacturer-backend
+npm install
+```
+
+Create a .env file based on the example file .env.example, and update the values as needed.
+
+```shell
+cp .env.example .env
+```
+
+Prepare the database
+
+```shell
+npm run db:prepare
+```
+
+Start the server
+
+```shell
+npm run start:dev
+```
+
 ## Thoughts
 
 ### Use Cases
