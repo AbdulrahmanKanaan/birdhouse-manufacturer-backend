@@ -1,5 +1,9 @@
 # Birdhouse Manufacturer Backend
 
+This backend application provides a RESTful API for managing birdhouses and their associated residencies
+
+It is designed to be easily extensible and maintainable. It follows the principles of separation of concerns and single responsibility, which means that each component of the application has a clear and well-defined purpose.
+
 ## Installation
 
 Clone the repository
@@ -21,7 +25,7 @@ Create a .env file based on the example file .env.example, and update the values
 cp .env.example .env
 ```
 
-Prepare the database
+Make sure your Postgres server is running, then prepare the database using the following command
 
 ```shell
 npm run db:prepare
@@ -33,9 +37,15 @@ Start the server
 npm run start:dev
 ```
 
-## Thoughts
+## API Docs
 
-### Use Cases
+you can find the api docs on `http://localhost:<port>/api-docs`
+
+> make sure to replace the port with the one provided in `.env` file
+
+## Use Cases
+
+After reading the requirements carefully, I found that we have the following use cases
 
 - Birdhouse individuals (UBID protected, Logged):
   - Register a new birdhouse
@@ -43,11 +53,11 @@ npm run start:dev
   - Add residency data for a birdhouse
   - Get birdhouse information with latest residency
 - Admins:
-  - List all birdhouses (paginated)
+  - List all birdhouses (Paginated)
   - View birdhouse
-  - Show birdhouse history (paginated)
+  - Show birdhouse history (Paginated)
 
-### Main Structure
+## Main Structure
 
 Based on what we have, if we take a closer look we can figure out that there are a lot of common things between the use cases, some of these common things are:
 
@@ -79,9 +89,9 @@ Regarding the structure there is a well known architecture that embraces the [(S
 
 ![Clean Architecture](docs/CleanArchitecture.jpg)
 
-but you know using **the clean architecture** with all of its concepts is a little bit overkill for our small project and there is also [(KISS)](https://en.wikipedia.org/wiki/KISS_principle) which forces me to keep the stuff simple
+but you know using **the clean architecture** with all of its concepts is a little bit overkill for our small project and there is also [(KISS)](https://en.wikipedia.org/wiki/KISS_principle) principles which kind of forces me to keep the stuff simple
 
-so in order to keep stuff simple I decided to take part of its main concepts (such as layered architecture, SOLID principles, dependency rule, testing, ...etc)
+so I decided to take the main concepts of the architecture (such as layered architecture, SOLID principles, dependency rule, testing, ...etc) and do some tweaks in order to keep stuff simple
 
 on the other hand NestJS helps with implementing the layered architecture due to its modular structure, and that led to having the following layers:
 
@@ -93,7 +103,7 @@ on the other hand NestJS helps with implementing the layered architecture due to
 
 by implementing the layered architecture we're following the *Dependency Inversion* principle *D in SOLID*
 
-#### Domain Layer
+### Domain Layer
 
 > represented by `domain` folder
 
@@ -101,15 +111,17 @@ the main purpose of this layer is to define our entities and how they're related
 
 it also helps us with drawing a boundary line between our domain and the data sources, in this way we are not depending on any type of databases, this pattern is called **Repository Pattern**
 
+the same thing is also applied to the external services
+
 In summary this layer should only contain the data model & repository interfaces & external services interfaces
 
-#### Application
+### Application
 
 > Represented by `core` & `admin` & `bird` modules
 
 to keep stuff simple as discussed before I decided to handle the business logic inside the normal services we all know
 
-In general, we are making some CRUD operations on the birdhouses, so we thought of some way to reduce code repetition to follow the [(DRY)](https://en.wikipedia.org/wiki/Don%27t_repeat_yourself) principle
+In general, the project is about making some CRUD operations on the birdhouses, so we thought of some way to reduce code repetition to follow the [(DRY)](https://en.wikipedia.org/wiki/Don%27t_repeat_yourself) principle
 
 we found out that we can separate this layer into 3 main modules
 
@@ -117,17 +129,17 @@ we found out that we can separate this layer into 3 main modules
 - BIRD
 - Admin
 
-in the `Core` module we will have the shared logic between `Admin` and `BIRD` and export it to the other two modules while consuming the `domain` & `infrastructure` layers, and we will handle the differences in the other two modules while consuming exported things from `Core`
+in the `Core` module we will have the shared logic between `Admin` and `BIRD` and export it to the other two modules while consuming the `domain` layer, and we will handle the differences in the other two modules while consuming exported things from `Core`
 
 in those module we'll find **controllers**, **cronjobs** and other services that triggers our business logic alongside with our **services** that provides our business logic
 
-#### Infrastructure
+### Infrastructure
 
 > represented by `repositories` & `logger` modules
 
-the purpose of this layer is to provide the implementation of the external services and repositories defined by the domain layer
+the purpose of this layer is to provide the implementation of the external services and repositories defined by the domain layer, then inject this implementation into the inner layers
 
-##### Repository Pattern
+#### Repository Pattern
 
 **Why repository pattern?**
 
@@ -136,21 +148,21 @@ the purpose of this layer is to provide the implementation of the external servi
 - when using this pattern your code will stay independent from ORMs, let's say some ORM library just got deprecated suddenly, you can simply change the binding to a different implementation and you're ready to go without even touching your services
 - Changes in the database doesn't necessarily need changes in our domain data model, because the data will always be mapped from data source to our entities (e.g. we wanted to move part of the data to a separate table, ORM model will be changed, but domain entities will stay the same)
 
-##### Logger
+#### Logger
 
 As we saw in the use cases there is a logging part
 
 to keep our code clean, reusable and responsible for one single thing *(S in solid)* I decided to create a separate module for it where you can implement whatever you want in this module (in my case I used winston) then export one single service `LoggerService`
 
 in this way the other modules doesn't really care about what's happening inside this module, it only cares about one thing
-> there is some stuff to log
+*"there is some stuff to log"*
 
-### Project Modules & Folders
+## Diving Deeper
 
 after discussing the main structure,
 in this section I'll add some notes about some modules and dive deeper in some of the implementations
 
-#### Logger Module
+### Logger Module
 
 this module is responsible for providing the implementation of the logger service from the domain layer
 
@@ -175,16 +187,16 @@ we have two channels for logging:
 back then when I was structuring the project, I thought of two ways to implement logging
 
 1. Event/Listener pattern (similar to observer pattern)
-   - in this pattern we simply create some events observed by the listeners
-   there is also some ready to use events triggered by database actions
-   let's say we have an event `birdhouse updated`, we attach a listener to it that is responsible for logging
+   - in this pattern we simply create some events observed by the listeners,
+   there is also some ready to use events triggered by database actions.
+   let's say we have an event `birdhouse updated`, we attach a listener to it that is responsible for logging,
    once the event is triggered it triggers all the listeners attached to it
 2. Injecting the LoggerService into the business logic services
    - we can use the logger service when necessary while implementing our business logic
 
 I decided to go with the second approach to keep it simple
 
-#### Common
+### Common
 
 this folder contains some common things that can be used across the whole project
 
@@ -222,3 +234,44 @@ src/common/
   - presenter.interceptor: interceptor used to intercept response returned from controller and map it to some presenter
 - types:
   - page: page type is a helper class that contains paginated data & it make some calculations
+
+as we can see everything in this folder is easily reusable and is not related to our project's logic directly
+
+### Authentication & Authorization
+
+The authentication in this project is simple
+
+There are some endpoints (BIRD endpoints) which are protected by a token (UBID) returned when the birdhouse registers for the first time
+
+The user can send this UBID in bulk, meaning that they can send multiple UBIDs at the same time
+
+In our case the user can send multiple UBIDs as comma separated values
+
+> e.g. X-UBID = ubid1,ubid2,ubid3
+
+Our authentication & authorization system will be divided on two steps:
+
+1. Authentication: we need to make sure the token is valid, by separating the token into multiple UBIDs, then finding birdhouses with those UBIDs and inject them into our request after making sure that those UBIDs are valid
+2. Authorization: BIRD endpoints contains `id` param, we need to make sure that the provided `id` belongs to a birdhouse that is accessible using the provided token (its UBID is used in the sent token)
+
+Those steps are represented by `auth.guard` for authentication & `can-manipulate.guard` for authorization
+
+### Presenters
+
+Well the main question of this section is, why do we even need a presenter? why we don't return the model directly?
+
+The answer for this question is pretty simple
+
+- The data model might contain data that we don't want to expose
+- The data should be mapped to another shape to fit the client needs
+- This also helps us to have clear vision regarding our endpoints, endpoints will have the same input (DTO) and output (View Model) regardless of its implementation
+
+Neither the controller nor the service are responsible for the previous tasks (in order to achieve single responsibility). Therefore, we require a separate component to handle these tasks, and this is where presenters come into play.
+
+Q: Hold up, I saw what you did there, you mentioned `View Model` ...
+
+A: Yes, a **view model** is a pure class that only holds data, and the presenter is usually used to map the domain data models to those view models then return the right shape of data (JSON, XML ... etc), **BUT** as mentioned earlier, we want to keep stuff as simple as possible, so I merged those concepts into one class called `Presenter`
+
+## Conclusion
+
+We hope you find this application useful and informative. If you have any questions or feedback, please don't hesitate to contact me.
