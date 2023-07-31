@@ -272,6 +272,16 @@ Q: Hold up, I saw what you did there, you mentioned `View Model` ...
 
 A: Yes, a **view model** is a pure class that only holds data, and the presenter is usually used to map the domain data models to those view models then return the right shape of data (JSON, XML ... etc), **BUT** as mentioned earlier, we want to keep stuff as simple as possible, so I merged those concepts into one class called `Presenter`
 
+### Repositories, Mappers & Exceptions
+
+The main purpose of repository is to communicate with the data source and return domain data models, it should be implementing an interface to force it to have the same inputs and outputs regardless of its implementation
+
+Q: Why mappers?
+A: Mappers are used to map the data from the ORM or pure sql results to domain entities and vice versa, repositories which are responsible for contacting the data source should not be responsible for this mapping in order not to break the single responsibility principle
+
+Q: Why custom exceptions?
+A: To avoid coupling the business logic services to the specific ORM used (in our case Sequelize), the application uses custom exceptions that are independent of the ORM. This allows for easier maintenance and flexibility, as changes to the ORM will not require changes to the business logic services implementation. Instead, the ORM exceptions are mapped to the custom exceptions, ensuring that the business logic services can handle errors consistently regardless of the underlying implementation.
+
 ## Conclusion
 
 We hope you find this application useful and informative. If you have any questions or feedback, please don't hesitate to contact me.
