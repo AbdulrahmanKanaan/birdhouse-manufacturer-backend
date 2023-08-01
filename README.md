@@ -4,6 +4,27 @@ This backend application provides a RESTful API for managing birdhouses and thei
 
 It is designed to be easily extensible and maintainable. It follows the principles of separation of concerns and single responsibility, which means that each component of the application has a clear and well-defined purpose.
 
+## Table Of Contents
+
+- [Birdhouse Manufacturer Backend](#birdhouse-manufacturer-backend)
+  - [Table Of Contents](#table-of-contents)
+  - [Installation](#installation)
+  - [API Docs](#api-docs)
+  - [Use Cases](#use-cases)
+  - [Main Structure](#main-structure)
+    - [Domain Layer](#domain-layer)
+    - [Application](#application)
+    - [Infrastructure](#infrastructure)
+      - [Repository Pattern](#repository-pattern)
+      - [Logger](#logger)
+  - [Diving Deeper](#diving-deeper)
+    - [Logger Module](#logger-module)
+    - [Common](#common)
+    - [Authentication \& Authorization](#authentication--authorization)
+    - [Presenters](#presenters)
+    - [Repositories, Mappers \& Exceptions](#repositories-mappers--exceptions)
+  - [Conclusion](#conclusion)
+
 ## Installation
 
 Clone the repository
