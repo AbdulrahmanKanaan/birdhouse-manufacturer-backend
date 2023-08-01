@@ -4,6 +4,8 @@ This backend application provides a RESTful API for managing birdhouses and thei
 
 It is designed to be easily extensible and maintainable. It follows the principles of separation of concerns and single responsibility, which means that each component of the application has a clear and well-defined purpose.
 
+> This project is a backend api for this repo [frontend](https://github.com/AbdulrahmanKanaan/birdhouse-manufacturer-frontend)
+
 ## Table Of Contents
 
 - [Birdhouse Manufacturer Backend](#birdhouse-manufacturer-backend)
@@ -30,7 +32,7 @@ It is designed to be easily extensible and maintainable. It follows the principl
 Clone the repository
 
 ```shell
-git clone https://github.com/AbdulrahmanKanaan/birdhouse-manufacturer-backend.git
+git clone git@github.com:AbdulrahmanKanaan/birdhouse-manufacturer-backend.git
 ```
 
 Install the dependencies:
