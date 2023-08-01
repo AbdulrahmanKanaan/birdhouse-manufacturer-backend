@@ -40,13 +40,23 @@ cd birdhouse-manufacturer-backend
 npm install
 ```
 
-Create a .env file based on the example file .env.example, and update the values as needed.
+Make sure your Postgres server is running, if you don't have postgresql installed, you can use docker for easy installation
+
+```shell
+docker run --name postgresql -e POSTGRES_USER=<db_user> -e POSTGRES_PASSWORD=<db_pass> -e POSTGRES_DB=<db_name> -p 5432:5432 -d postgres
+```
+
+> Make sure to replace the variables <db_user> <db_pass> <db_name>
+
+> If you want to persist the data, make sure to setup a volume
+
+Create a `.env` file based on the example file `.env.example`, and update the values as needed.
 
 ```shell
 cp .env.example .env
 ```
 
-Make sure your Postgres server is running, then prepare the database using the following command
+Prepare the database using the following command
 
 ```shell
 npm run db:prepare
