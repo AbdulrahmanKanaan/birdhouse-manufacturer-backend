@@ -14,6 +14,8 @@ export class PresenterInterceptor<T, R extends new (...args: any[]) => any>
 
   /**
    * Intercepts the response and wraps it in the presenter
+   * @param context
+   * @param next
    */
   intercept(
     context: ExecutionContext,
