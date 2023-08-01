@@ -46,9 +46,8 @@ Make sure your Postgres server is running, if you don't have postgresql installe
 docker run --name postgresql -e POSTGRES_USER=<db_user> -e POSTGRES_PASSWORD=<db_pass> -e POSTGRES_DB=<db_name> -p 5432:5432 -d postgres
 ```
 
-> Make sure to replace the variables <db_user> <db_pass> <db_name>
-
-> If you want to persist the data, make sure to setup a volume
+> - Make sure to replace the variables <db_user> <db_pass> <db_name>
+> - If you want to persist the data, make sure to setup a volume
 
 Create a `.env` file based on the example file `.env.example`, and update the values as needed.
 
@@ -308,9 +307,11 @@ A: Yes, a **view model** is a pure class that only holds data, and the presenter
 The main purpose of repository is to communicate with the data source and return domain data models, it should be implementing an interface to force it to have the same inputs and outputs regardless of its implementation
 
 Q: Why mappers?
+
 A: Mappers are used to map the data from the ORM or pure sql results to domain entities and vice versa, repositories which are responsible for contacting the data source should not be responsible for this mapping in order not to break the single responsibility principle
 
 Q: Why custom exceptions?
+
 A: To avoid coupling the business logic services to the specific ORM used (in our case Sequelize), the application uses custom exceptions that are independent of the ORM. This allows for easier maintenance and flexibility, as changes to the ORM will not require changes to the business logic services implementation. Instead, the ORM exceptions are mapped to the custom exceptions, ensuring that the business logic services can handle errors consistently regardless of the underlying implementation.
 
 ## Conclusion
