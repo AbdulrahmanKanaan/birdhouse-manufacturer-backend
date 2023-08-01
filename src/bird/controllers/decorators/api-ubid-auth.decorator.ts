@@ -1,6 +1,7 @@
 import { applyDecorators } from '@nestjs/common';
 import { ApiHeader } from '@nestjs/swagger';
 
+// This decorator is used to document the authentication header
 export function ApiUbidAuth() {
   return applyDecorators(
     ApiHeader({

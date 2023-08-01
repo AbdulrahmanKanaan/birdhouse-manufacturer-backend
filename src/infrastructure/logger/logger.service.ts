@@ -11,7 +11,7 @@ import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 @Injectable({ scope: Scope.TRANSIENT })
 export class LoggerService
   extends ConsoleLogger
-  implements NestLoggerService, BaseLoggerService
+  implements BaseLoggerService, NestLoggerService
 {
   constructor(
     @Inject(WINSTON_MODULE_NEST_PROVIDER)

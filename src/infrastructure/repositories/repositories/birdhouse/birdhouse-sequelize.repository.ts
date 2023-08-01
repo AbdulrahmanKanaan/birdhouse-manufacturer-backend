@@ -86,6 +86,7 @@ export class BirdhouseSequelizeRepository implements BirdhouseRepository {
     return count;
   }
 
+  // helper method to map where filters to sequelize where options
   private mapWhereFilters(filters?: BirdhouseRepoTypes.FindAllFilters) {
     const where: WhereOptions<BirdhouseModel> = {};
 
@@ -110,6 +111,7 @@ export class BirdhouseSequelizeRepository implements BirdhouseRepository {
     return where;
   }
 
+  // helper method to map relations to sequelize includes
   private mapRelations(
     relations: BirdhouseRepoTypes.FindOptions['relations'] = {},
   ) {
@@ -182,6 +184,7 @@ export class BirdhouseSequelizeRepository implements BirdhouseRepository {
 
     const ids: string[] = [];
 
+    // Handle types of input id (string or string[])
     if (typeof id === 'string') {
       ids.push(id);
     } else {
@@ -200,6 +203,10 @@ export class BirdhouseSequelizeRepository implements BirdhouseRepository {
   }
 
   public async getOutdatedBirdhouses(date: Date): Promise<Birdhouse[]> {
+    /**
+     * Get all birdhouses that have been updated before the given date
+     * and have a residency that has been created before the given date
+     */
     const birdhouses = await this.birdhouseModel.findAll({
       where: {
         updatedAt: {

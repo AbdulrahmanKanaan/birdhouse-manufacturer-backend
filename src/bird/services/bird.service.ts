@@ -98,6 +98,7 @@ export class BirdService {
       residencyDto.eggs,
     );
 
+    // create residency
     try {
       residency = await this.residencyRepo.create(residency);
     } catch (e) {
@@ -108,6 +109,7 @@ export class BirdService {
       throw new ResidencyCreateFailedException(message);
     }
 
+    // update birdhouse, assign latest residency to it
     try {
       birdhouse = await this.birdhouseRepo.update(
         { id: birdhouseId },
@@ -117,6 +119,7 @@ export class BirdService {
       throw new BirdhouseUpdateFailedException(birdhouse.id!);
     }
 
+    // assign residency to birdhouse
     birdhouse.residency = residency;
 
     this.logger.log({
